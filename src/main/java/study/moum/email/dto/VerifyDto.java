@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 public class VerifyDto {
 
-    @NotNull @NotEmpty
+    @NotNull @NotEmpty(message = "인증 코드를 입력해야합니다.")
     private String verifyCode;
 }

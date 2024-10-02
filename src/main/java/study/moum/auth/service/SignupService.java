@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.auth.dto.MemberDto;
+import study.moum.global.error.ErrorCode;
+import study.moum.global.error.exception.CustomException;
 import study.moum.global.error.exception.DuplicateUsernameException;
 import study.moum.redis.util.RedisUtil;
 
@@ -32,11 +34,12 @@ public class SignupService {
                 .password(bCryptPasswordEncoder.encode(memberRequestDto.getPassword()))
                 .build();
 
-//        // 인증 코드 검증
-//        String verifyCode = redisUtil.getData(memberRequestDto.getEmail()); // Redis에서 이메일로 인증 코드 가져오기
-//        if (verifyCode == null || !verifyCode.equals(memberRequestDto.getVerifyCode())) {
-//            throw new CustomException(ErrorCode.EMAIL_VERIFY_FAILED);
-//        }
+        // 인증 코드 검증
+        String verifyCode = redisUtil.getData(memberRequestDto.getEmail()); // Redis에서 이메일로 인증 코드 가져오기
+        if (verifyCode == null || !verifyCode.equals(memberRequestDto.getVerifyCode())) {
+            System.out.println("==============="+verifyCode);
+            throw new CustomException(ErrorCode.EMAIL_VERIFY_FAILED);
+        }
 
 
         memberRepository.save(memberEntity);

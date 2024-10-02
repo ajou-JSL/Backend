@@ -21,7 +21,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String sender;
 
-    private MimeMessage createMessage(String code, String email) throws Exception{
+    private MimeMessage createMessage(String email, String code) throws Exception{
         MimeMessage message = javaMailSender.createMimeMessage();
 
         message.addRecipients(Message.RecipientType.TO, email);
@@ -32,9 +32,9 @@ public class EmailService {
         return  message;
     }
 
-    public void sendMail(String code, String email) throws Exception{
+    public void sendMail(String email, String code) throws Exception{
         try{
-            MimeMessage mimeMessage = createMessage(code, email);
+            MimeMessage mimeMessage = createMessage(email, code);
             javaMailSender.send(mimeMessage);
         }catch (MailException mailException){
             mailException.printStackTrace();
@@ -44,9 +44,9 @@ public class EmailService {
 
     public String sendCertificationMail(String email) throws Exception {
         String code = UUID.randomUUID().toString().substring(0, 6); //랜덤 인증번호 : uuid
-        sendMail(code,email);
+        sendMail(email,code);
 
-        redisUtil.setDataExpire(code,email,60*1L); // {key,value} 1분동안 저장.
+        redisUtil.setDataExpire(email,code,60*1L); // {key,value} 1분동안 저장.
         return  code;
     }
 }

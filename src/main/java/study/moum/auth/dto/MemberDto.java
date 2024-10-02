@@ -28,6 +28,8 @@ public class MemberDto {
         @NotEmpty @NotNull @Email
         private String email;
 
+        private String verifyCode;
+
         // private String verifyCode;
 
         public MemberEntity toEntity(){

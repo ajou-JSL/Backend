@@ -11,7 +11,7 @@ public class EmailDto {
     @Setter
     public static class Request{
         @Email
-        @NotEmpty(message = "이메일 입력(google or naver)")
+        @NotEmpty(message = "이메일 입력을 입력하세요")
         private String email;
     }
 }
