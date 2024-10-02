@@ -49,7 +49,7 @@ public class ArticleDto {
         public Response(ArticleEntity article){
             this.id = article.getId();
             this.title = article.getTitle();
-            this.author = article.getAuthor().toString();
+            this.author = article.getAuthor().getUsername();
             this.viewCounts = article.getViewCount();
             this.commentCounts = article.getCommentCount();
             this.likeCounts = article.getLikesCount();

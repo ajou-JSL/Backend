@@ -14,6 +14,11 @@ public enum ResponseCode {
     LOGOUT_SUCCESS(200, "M004", "로그아웃 되었습니다."),
     GET_MY_INFO_SUCCESS(200, "M005", "내 정보 조회 완료"),
 
+    // Article
+    ARTICLE_ALL_GET_SUCCESS(200,"A001","게시글 목록 조회 성공."),
+    ARTICLE_ONE_GET_SUCCESS(200,"A002","게시글 단건 조회 성공."),
+    ARTICLE_POST_SUCCESS(201,"A003","게시글 등록 성공."),
+
     // Jwt
     ACCESS_TOKEN(200, "J001", "액세스 토큰 발급 성공"),
 

@@ -10,29 +10,24 @@ import study.moum.community.article.domain.ArticleDetailsEntity;
 import study.moum.community.article.domain.ArticleEntity;
 
 public class ArticleDetailsDto {
-//
-//    @Builder
-//    @AllArgsConstructor
-//    @Getter
-//    public static class Request{
-//        private int id;
-//
-//        @NotEmpty @NotNull
-//        private String title;
-//
-//        // ArticleDetails로 빼서 저장해줄거임 request.dto에만 존재
-//        private String content;
-//
-//        private MemberEntity author;
-//
-//        public ArticleEntity toEntity(){
-//            return ArticleEntity.builder()
-//                    .id(id)
-//                    .title(title)
-//                    .author(author)
-//                    .build();
-//        }
-//    }
+
+    @Builder
+    @AllArgsConstructor
+    @Getter
+    public static class Request{
+        private int id;
+
+        // ArticleDetails로 빼서 저장해줄거임 request.dto에만 존재
+        private String content;
+
+
+        public ArticleDetailsEntity toEntity(){
+            return ArticleDetailsEntity.builder()
+                    .id(id)
+                    .content(content)
+                    .build();
+        }
+    }
 
     @Getter
     public static class Response{
@@ -43,7 +38,9 @@ public class ArticleDetailsDto {
 //        private final int commentCounts;
 //        private final int likeCounts;
 //        private final String author;
-        // private List<CommentDto.Response> comments = new ArrayList<>();
+        //private List<CommentDto.Response> comments = new ArrayList<>();
+        private final int articleId;
+        private final String content;
 
         public Response(ArticleDetailsEntity articleDetails, ArticleEntity article){
 //            this.id = article.getId();
@@ -55,6 +52,8 @@ public class ArticleDetailsDto {
 //            this.comments = article.getComments().stream()
 //                    .map(CommentDto.Response::new)
 //                    .collect(Collectors.toList());
+            this.articleId = article.getId();
+            this.content = articleDetails.getContent();
         }
     }
 

@@ -26,7 +26,10 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALID(400, "A001", "refresh token invalid"),
     JWT_TOKEN_EXPIRED(401, "A002", "jwt token is expired"),
 
-    EMAIL_VERIFY_FAILED(400,"E001","email verify failed");
+    EMAIL_VERIFY_FAILED(400,"E001","email verify failed"),
+
+    // Article
+    ARTICLE_NOT_FOUND(404,"AT001","article not found");
 
     private final int status;
     private final String code;
