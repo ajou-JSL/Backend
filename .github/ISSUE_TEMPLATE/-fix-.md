@@ -2,7 +2,7 @@
 name: "[FIX]"
 about: 코드 수정사항
 title: 'ex) [FIX] title message '
-labels: ''
+labels: "\U0001F7E2 FIX"
 assignees: ''
 
 ---

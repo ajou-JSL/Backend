@@ -2,7 +2,7 @@
 name: "[ETC]"
 about: 기타 이슈
 title: 'ex) [ETC] title message '
-labels: ''
+labels: "\U0001F7E4 ETC"
 assignees: ''
 
 ---
