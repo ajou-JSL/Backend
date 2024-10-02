@@ -21,4 +21,6 @@ public class ArticleEntity {
     @NotNull @NotEmpty
     @Column(name = "title", nullable = false)
     private String title;
+
+    // commit test
 }
