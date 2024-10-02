@@ -50,4 +50,27 @@ public class ArticleController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
+    @PatchMapping("/community/article/{id}")
+    public ResponseEntity<ResultResponse> updateArticle(
+            @PathVariable int id,
+            @RequestBody ArticleDetailsDto.Request articleDetailsRequestDto,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails){
+
+        ArticleDetailsDto.Response articleResponse = articleService.updateArticleDetails(id, articleDetailsRequestDto, customUserDetails.getUsername());
+
+        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_UPDATE_SUCCESS, articleResponse);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+    }
+
+    @DeleteMapping("/community/article/{id}")
+    public ResponseEntity<ResultResponse> deleteArticle(
+            @PathVariable int id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails){
+
+        ArticleDto.Response articleResponse = articleService.deleteArticleDetails(id, customUserDetails.getUsername());
+
+        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_DELETE_SUCCESS, articleResponse);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+    }
+
 }

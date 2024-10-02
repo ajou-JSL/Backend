@@ -23,7 +23,8 @@ public class ArticleDetailsEntity {
     @Column(name = "content")
     private String content;
 
-    public void updateContent(String newContent){
+    public void updateArticleDetails(String newContent){
+
         this.content = newContent;
     }
 

@@ -62,4 +62,10 @@ public class ArticleEntity {
     public void updateCommentCount(int num){
         this.commentCount += num;
     }
+
+    public void updateArticle(String title)
+    {
+        this.title = title;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

@@ -13,8 +13,10 @@ import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
-import study.moum.global.error.exception.MemberNotExistException;
 import study.moum.global.error.exception.NeedLoginException;
+import study.moum.global.error.exception.NoAuthorityException;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -51,14 +53,70 @@ public class ArticleService {
 
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ArticleDetailsDto.Response getArticleById(int articleDetailsId){
-        ArticleDetailsEntity articleDetails = articleDetailsRepository.findById(articleDetailsId).orElseThrow(()->new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
-        ArticleEntity article = articleRepository.findById(articleDetailsId).orElseThrow(()->new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+        ArticleDetailsEntity articleDetails = getArticleDetails(articleDetailsId);
+        ArticleEntity article = getArticle(articleDetailsId);
 
         article.viewCountUp();
 
         return new ArticleDetailsDto.Response(articleDetails, article);
-
     }
+
+    @Transactional
+    public ArticleDetailsDto.Response updateArticleDetails(int articleDetailsId,
+                                                           ArticleDetailsDto.Request articleDetailsRequestDto,
+                                                           String memberName){
+
+        ArticleDetailsEntity articleDetails = getArticleDetails(articleDetailsId);
+        ArticleEntity article = getArticle(articleDetailsId);
+
+        String articleAuthor = article.getAuthor().getUsername();
+        checkAuthor(memberName, articleAuthor);
+
+        String newTitle = articleDetailsRequestDto.getTitle();
+        String newContent = articleDetailsRequestDto.getContent();
+
+        articleDetails.updateArticleDetails(newContent);
+        article.updateArticle(newTitle);
+
+        articleDetailsRepository.save(articleDetails);
+        articleRepository.save(article);
+
+        return new ArticleDetailsDto.Response(articleDetails, article);
+    }
+
+    @Transactional
+    public ArticleDto.Response deleteArticleDetails(int articleDetailsId, String memberName){
+
+        ArticleDetailsEntity articleDetails = getArticleDetails(articleDetailsId);
+        ArticleEntity article = getArticle(articleDetailsId);
+
+        String articleAuthor = article.getAuthor().getUsername();
+        checkAuthor(memberName, articleAuthor);
+
+
+        articleDetailsRepository.deleteById(articleDetailsId);
+        articleRepository.deleteById(articleDetailsId);
+
+        return new ArticleDto.Response(article);
+    }
+
+    private ArticleDetailsEntity getArticleDetails(int articleDetailsId) {
+        return articleDetailsRepository.findById(articleDetailsId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+    }
+
+    private ArticleEntity getArticle(int articleId) {
+        return articleRepository.findById(articleId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+    }
+
+    private void checkAuthor(String memberName, String articleAuthor) {
+        if (!memberName.equals(articleAuthor)) {
+            throw new NoAuthorityException();
+        }
+    }
+
+
 }
