@@ -16,4 +16,15 @@ public class ArticleDetailsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    // ArticleEntity랑 one to one 매핑 안걸고 사용
+    @Column(name = "article_id")
+    private int articleId;
+
+    @Column(name = "content")
+    private String content;
+
+    public void updateContent(String newContent){
+        this.content = newContent;
+    }
+
 }
