@@ -14,6 +14,7 @@ import study.moum.community.article.dto.ArticleDto;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
 import study.moum.global.error.exception.MemberNotExistException;
+import study.moum.global.error.exception.NeedLoginException;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class ArticleService {
     public ArticleDto.Response postArticle(ArticleDto.Request articleRequestDto, String memberName){
         MemberEntity author = memberRepository.findByUsername(memberName);
         if(author == null){
-            throw new MemberNotExistException();
+            throw new NeedLoginException();
         }
 
         ArticleDto.Request articleRequest = ArticleDto.Request.builder()
