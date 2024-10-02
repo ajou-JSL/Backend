@@ -17,6 +17,8 @@ import study.moum.auth.domain.entity.RefreshEntity;
 import study.moum.auth.domain.repository.RefreshRepository;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.ErrorResponse;
+import study.moum.global.response.ResponseCode;
+import study.moum.global.response.ResultResponse;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -48,7 +50,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     // Access : 헤더에 발급 후 프론트에서 로컬 스토리지 저장
     // Refresh : 쿠키에 발급
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
     //유저 정보
     String username = authentication.getName();
 
@@ -65,11 +67,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     addRefreshEntity(username, refresh, 86400000L); // 24h
 
     //응답 설정
-        // ResultResponse resultResponse = ResultResponse.of(ResponseCode.LOGIN_SUCCESS, username);
+        ResultResponse resultResponse = ResultResponse.of(ResponseCode.LOGIN_SUCCESS, username);
     response.setHeader("access", access);
     response.addCookie(createCookie("refresh", refresh));
     response.setStatus(HttpStatus.OK.value());
-        //response.setStatus(resultResponse.getStatus());
+    response.setContentType("application/json;charset=UTF-8");
+    response.getWriter().write(new ObjectMapper().writeValueAsString(resultResponse));
     }
 
     private void addRefreshEntity(String username, String refresh, Long expiredMs) {

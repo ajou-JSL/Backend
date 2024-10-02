@@ -9,6 +9,7 @@ import study.moum.auth.domain.CustomUserDetails;
 import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.community.article.service.ArticleService;
+import study.moum.global.error.exception.NeedLoginException;
 import study.moum.global.response.ResponseCode;
 import study.moum.global.response.ResultResponse;
 
@@ -36,10 +37,13 @@ public class ArticleController {
     }
 
     @PostMapping("/community/article")
-    public ResponseEntity<ResultResponse> getArticleById(
+    public ResponseEntity<ResultResponse> postArticle(
             @RequestBody ArticleDto.Request articleRequestDto,
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
+        if(customUserDetails == null){
+            throw new NeedLoginException();
+        }
         ArticleDto.Response articleResponse = articleService.postArticle(articleRequestDto, customUserDetails.getUsername());
 
         ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_POST_SUCCESS, articleResponse);
