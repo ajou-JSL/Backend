@@ -18,9 +18,9 @@ public class EmailController {
 
     @PostMapping("/send-mail")
     public ResponseEntity<?> emailAuthentification (@RequestBody EmailDto.Request emailRequestDto) throws Exception {
-        String verifyCodeId = emailService.sendCertificationMail(emailRequestDto.getEmail());
+        String verifyCode = emailService.sendCertificationMail(emailRequestDto.getEmail());
 
-        ResultResponse resultResponse = ResultResponse.of(ResponseCode.EMAIL_SEND_SUCCESS, verifyCodeId);
+        ResultResponse resultResponse = ResultResponse.of(ResponseCode.EMAIL_SEND_SUCCESS, /*verifyCode*/emailRequestDto.getEmail());
         return new ResponseEntity<>(resultResponse, HttpStatus.valueOf(resultResponse.getStatus()));
     }
 }
