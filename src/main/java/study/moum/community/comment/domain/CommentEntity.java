@@ -23,4 +23,6 @@ public class CommentEntity {
 
     @Column(name = "content")
     private String content;
+
+    // test commit
 }
