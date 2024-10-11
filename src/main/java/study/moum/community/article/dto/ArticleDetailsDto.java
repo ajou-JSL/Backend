@@ -8,6 +8,11 @@ import lombok.Getter;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.community.article.domain.ArticleDetailsEntity;
 import study.moum.community.article.domain.ArticleEntity;
+import study.moum.community.comment.dto.CommentDto;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ArticleDetailsDto {
 
@@ -40,7 +45,7 @@ public class ArticleDetailsDto {
         private final int commentCounts;
         private final int likeCounts;
         private final String author;
-        //private List<CommentDto.Response> comments = new ArrayList<>();
+        private List<CommentDto.Response> comments = new ArrayList<>();
 
         public Response(ArticleDetailsEntity articleDetails, ArticleEntity article){
             this.id = article.getId();
@@ -49,9 +54,9 @@ public class ArticleDetailsDto {
             this.viewCounts = article.getViewCount();
             this.commentCounts = article.getCommentCount();
             this.likeCounts = article.getLikesCount();
-//            this.comments = article.getComments().stream()
-//                    .map(CommentDto.Response::new)
-//                    .collect(Collectors.toList());
+            this.comments = articleDetails.getComments().stream()
+                    .map(CommentDto.Response::new)
+                    .collect(Collectors.toList());
             this.content = articleDetails.getContent();
         }
     }

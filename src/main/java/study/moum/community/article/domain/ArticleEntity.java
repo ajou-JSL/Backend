@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import study.moum.auth.domain.entity.MemberEntity;
+import study.moum.community.comment.domain.CommentEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "Article")
+@Table(name = "article")
 public class ArticleEntity {
 
     @Id
@@ -46,9 +47,6 @@ public class ArticleEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-//    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-//    private List<Comment> comments = new ArrayList<>();
-
     @PrePersist
     public void createDate(){
         this.createdAt = LocalDateTime.now();
@@ -59,9 +57,7 @@ public class ArticleEntity {
         this.viewCount += 1;
     }
     public void likesCountUp() { this.likesCount += 1; }
-    public void updateCommentCount(int num){
-        this.commentCount += num;
-    }
+    public void commentsCountUp(){this.commentCount += 1;}
 
     public void updateArticle(String title)
     {

@@ -13,7 +13,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "Member")
+@Table(name = "member")
 public class MemberEntity {
 
     @Id

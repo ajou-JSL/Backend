@@ -26,7 +26,13 @@ public enum ResponseCode {
 
     // Email
     EMAIL_SEND_SUCCESS(200,"E001","인증 이메일 발송 성공하였습니다."),
-    EMAIL_VERIFY_SUCCESS(200,"E001","이메일 인증 성공하였습니다.");
+    EMAIL_VERIFY_SUCCESS(200,"E001","이메일 인증 성공하였습니다."),
+
+    // Commenet
+    COMMENT_CREATE_SUCCESS(201,"C001","댓글 작성 성공"),
+    COMMENT_UPDATE_SUCCESS(201,"C002","댓글 수정 성공"),
+    COMMENT_DELETE_SUCCESS(200,"C003","댓글 삭제 성공");
+
 
     private final int status;
     private final String code;
