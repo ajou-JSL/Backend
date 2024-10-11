@@ -2,6 +2,7 @@ package study.moum.community.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.community.article.domain.ArticleDetailsEntity;
@@ -25,6 +26,24 @@ public class CommentService {
     private final ArticleDetailsRepository articleDetailsRepository;
     private final MemberRepository memberRepository;
 
+    /**
+     * 댓글을 생성하는 메서드.
+     *
+     * @param commentRequestDto 요청으로 들어온 댓글의 내용이 담긴 DTO
+     * @param username 댓글을 작성한 유저의 사용자 이름
+     * @param articleId 댓글이 달릴 게시글의 ID
+     * @return 생성된 댓글에 대한 응답 DTO
+     *
+     * 댓글 작성자의 정보와 게시글의 ID를 받아 해당 게시글에 새로운 댓글을 작성하고 저장
+     * 댓글이 작성된 게시글의 댓글 수를 증가시키고 게시글_상세 테이블에도 변화를 반영하여 저장
+     *
+     * - MemberEntity에서 작성자 정보 조회
+     * - ArticleEntity와 ArticleDetailsEntity에서 게시글과 게시글 상세 정보 조회
+     * - 요청으로 들어온 댓글 내용을 이용해 CommentEntity로 변환 후 저장
+     * - 게시글의 댓글 수를 증가시키고 업데이트 후 저장
+     * - 게시글_상세 테이블에 댓글 변경 사항을 저장
+     */
+    @Transactional
     public CommentDto.Response createComment(CommentDto.Request commentRequestDto, String username, int articleId){
 
         MemberEntity author = findUser(username);

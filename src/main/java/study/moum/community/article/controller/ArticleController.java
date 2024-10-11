@@ -22,21 +22,32 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-//    @GetMapping("/community/articles")
-//    public ResponseEntity<ResultResponse> getAllArticles(){
-//        List<ArticleDto.Response> articles = new ArrayList<>();
-//        ResultResponse response = ResultResponse.of(ResponseCode.조회성공, articlesDto);
-//    }
+    /**
+     * 게시글 목록 조회 API 엔드포인트.
+     *
+     * @return 게시글 목록을 포함한 응답 객체
+     *
+     * 모든 게시글 목록을 조회한 후, 성공 응답과 함께 반환
+     */
+    @GetMapping("/api/articles")
+    public ResponseEntity<ResultResponse> getArticleList() {
+        List<ArticleDto.Response> articleList = articleService.getArticleList();
 
-    @GetMapping("/community/article/{id}")
+        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+    }
+
+
+
+    @GetMapping("/api/articles/{id}")
     public ResponseEntity<ResultResponse> getArticleById(@PathVariable int id){
         ArticleDetailsDto.Response  articleDetailsResponse = articleService.getArticleById(id);
-        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_ONE_GET_SUCCESS, articleDetailsResponse);
+        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_GET_SUCCESS, articleDetailsResponse);
 
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
-    @PostMapping("/community/article")
+    @PostMapping("/api/articles")
     public ResponseEntity<ResultResponse> postArticle(
             @RequestBody ArticleDto.Request articleRequestDto,
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
@@ -50,7 +61,7 @@ public class ArticleController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
-    @PatchMapping("/community/article/{id}")
+    @PatchMapping("/api/articles/{id}")
     public ResponseEntity<ResultResponse> updateArticle(
             @PathVariable int id,
             @RequestBody ArticleDetailsDto.Request articleDetailsRequestDto,
@@ -62,7 +73,7 @@ public class ArticleController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
-    @DeleteMapping("/community/article/{id}")
+    @DeleteMapping("/api/articles/{id}")
     public ResponseEntity<ResultResponse> deleteArticle(
             @PathVariable int id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
