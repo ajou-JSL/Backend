@@ -21,6 +21,7 @@ public enum ErrorCode {
     NEED_LOGIN(401, "M004", "로그인을 해야합니다."),
     AUTHENTICATION_NOT_FOUND(401, "M005", "인증되지 않은 회원입니다."),
     MEMBER_ALREADY_LOGOUT(400, "M006", "이미 로그아웃 하였습니다."),
+    MEMBER_ALREADY_EXISTS(400, "M007", "이미 회원가입 완료한 이메일입니다."),
 
     // Auth
     REFRESH_TOKEN_INVALID(400, "A001", "유효하지 않은 refresh 토큰 입니다."),

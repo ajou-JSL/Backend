@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import study.moum.auth.domain.entity.MemberEntity;
+import study.moum.auth.domain.repository.MemberRepository;
+import study.moum.global.error.exception.MemberAlreadySignedUpException;
 import study.moum.redis.util.RedisUtil;
 
 import java.util.UUID;
@@ -17,6 +20,7 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil;
+    private final MemberRepository memberRepository;
 
     @Value("${spring.mail.username}")
     private String sender;
@@ -33,6 +37,13 @@ public class EmailService {
     }
 
     public void sendMail(String email, String code) throws Exception{
+
+        MemberEntity member = memberRepository.findByEmail(email);
+        if(member != null){
+            System.out.println("============================"+member.getEmail());
+            throw new MemberAlreadySignedUpException();
+        }
+
         try{
             MimeMessage mimeMessage = createMessage(email, code);
             javaMailSender.send(mimeMessage);
