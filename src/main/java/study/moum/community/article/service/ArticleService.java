@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
-import study.moum.community.article.domain.ArticleDetailsEntity;
-import study.moum.community.article.domain.ArticleDetailsRepository;
-import study.moum.community.article.domain.ArticleEntity;
-import study.moum.community.article.domain.ArticleRepository;
+import study.moum.community.article.domain.*;
 import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.global.error.ErrorCode;
@@ -16,7 +13,6 @@ import study.moum.global.error.exception.CustomException;
 import study.moum.global.error.exception.NeedLoginException;
 import study.moum.global.error.exception.NoAuthorityException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +48,7 @@ public class ArticleService {
         ArticleDto.Request articleRequest = ArticleDto.Request.builder()
                 .author(author)
                 .title(articleRequestDto.getTitle())
+                .category(articleRequestDto.getCategory())
                 .build();
 
         // article 테이블 저장
@@ -126,16 +123,19 @@ public class ArticleService {
 
         ArticleDetailsEntity articleDetails = getArticleDetails(articleDetailsId);
         ArticleEntity article = getArticle(articleDetailsId);
-
         String articleAuthor = article.getAuthor().getUsername();
+
+        // 로그인유저 == 작성자 여부 체크
         checkAuthor(memberName, articleAuthor);
 
+        // 새로 요청된 수정 값들 추출
         String newTitle = articleDetailsRequestDto.getTitle();
         String newContent = articleDetailsRequestDto.getContent();
+        ArticleCategories newCategory = articleDetailsRequestDto.getCategory();
 
         // article_details, article 둘 다 update
         articleDetails.updateArticleDetails(newContent);
-        article.updateArticle(newTitle);
+        article.updateArticle(newTitle,newCategory);
 
         // article_details, article 둘 다 저장
         articleDetailsRepository.save(articleDetails);

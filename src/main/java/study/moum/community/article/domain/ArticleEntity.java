@@ -32,6 +32,10 @@ public class ArticleEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ArticleCategories category;
+
     @Column(name = "view_count")
     private int viewCount;
 
@@ -59,9 +63,10 @@ public class ArticleEntity {
     public void likesCountUp() { this.likesCount += 1; }
     public void commentsCountUp(){this.commentCount += 1;}
 
-    public void updateArticle(String title)
+    public void updateArticle(String title, ArticleCategories category)
     {
         this.title = title;
+        this.category = category;
         this.updatedAt = LocalDateTime.now();
     }
 }

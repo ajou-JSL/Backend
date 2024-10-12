@@ -70,7 +70,7 @@ public class CommentController {
             @Valid @RequestBody CommentDto.Request commentRequestDto
     ){
 
-        CommentDto.Response commentResponse = CommentService.updateComment(commentRequestDto, customUserDetails.getUsername(), id);
+        CommentDto.Response commentResponse = commentService.updateComment(commentRequestDto, customUserDetails.getUsername(), id);
 
         ResultResponse response = ResultResponse.of(ResponseCode.COMMENT_UPDATE_SUCCESS, commentResponse);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
