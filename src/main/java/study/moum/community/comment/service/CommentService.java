@@ -50,8 +50,6 @@ public class CommentService {
         ArticleEntity article = getArticle(articleId);
         ArticleDetailsEntity articleDetails = getArticleDetails(articleId);
 
-        checkAuthor(username, article.getAuthor().getUsername());
-
         CommentDto.Request commentRequest = CommentDto.Request.builder()
                 .articleDetails(articleDetails)
                 .author(author)
