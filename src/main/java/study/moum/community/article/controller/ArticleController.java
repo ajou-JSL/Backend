@@ -84,4 +84,49 @@ public class ArticleController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
+
+
+    /**
+     * 키워드를 사용하여 게시글을 검색하는 API.
+     *
+     * @param keyword 검색어
+     * @return 검색된 게시글 리스트
+     */
+    @GetMapping("/api/articles/search")
+    public ResponseEntity<ResultResponse> searchArticles(@RequestParam(required = false) String keyword,
+                                                         @RequestParam(required = false) String category
+    ) {
+
+        List<ArticleDto.Response> articleList = articleService.getArticleWithTitleSearch(keyword,category);
+
+        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+    }
+
+    /**
+     *
+     * 자유게시판 게시글 목록 조회 API
+     *
+     */
+    @GetMapping("/api/articles/freetalking")
+    public ResponseEntity<ResultResponse> getFreeTalkingArticles(){
+        List<ArticleDto.Response> articleList = articleService.getFreeTalkingArticles();
+
+        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+    }
+
+    /**
+     *
+     * 모집게시판 게시글 목록 조회 API
+     *
+     */
+    @GetMapping("/api/articles/recruiting")
+    public ResponseEntity<ResultResponse> getRecruitingArticles(){
+        List<ArticleDto.Response> articleList = articleService.getRecruitingArticles();
+
+        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+    }
+
 }

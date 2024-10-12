@@ -23,6 +23,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleDetailsRepository articleDetailsRepository;
     private final MemberRepository memberRepository;
+    private final ArticleRepositoryCustom articleRepositoryCustom;
 
     /**
      * 게시글 작성 메서드.
@@ -169,6 +170,59 @@ public class ArticleService {
 
         return new ArticleDto.Response(article);
     }
+
+    /**
+     * 자유게시판 게시글 목록 조회 메서드
+     *
+     * @return 자유게시판 게시글 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<ArticleDto.Response> getFreeTalkingArticles() {
+        List<ArticleEntity> articles = articleRepositoryCustom.findFreeTalkingArticles();
+
+        // 조회된 게시글들을 DTO로 변환
+        List<ArticleDto.Response> articleResponseList = articles.stream()
+                .map(ArticleDto.Response::new)
+                .collect(Collectors.toList());
+
+        return articleResponseList;
+    }
+
+    /**
+     * 모집게시판 게시글 목록 조회 메서드
+     *
+     * @return 모집게시판 게시글 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<ArticleDto.Response> getRecruitingArticles() {
+        List<ArticleEntity> articles = articleRepositoryCustom.findRecruitingdArticles();
+
+        // 조회된 게시글들을 DTO로 변환
+        List<ArticleDto.Response> articleResponseList = articles.stream()
+                .map(ArticleDto.Response::new)
+                .collect(Collectors.toList());
+
+        return articleResponseList;
+    }
+
+    /**
+     * 주어진 키워드를 사용하여 게시글을 검색하는 메서드.
+     *
+     * @param keyword 검색어
+     * @return 검색된 게시글 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<ArticleDto.Response> getArticleWithTitleSearch(String keyword, String category) {
+        List<ArticleEntity> articles = articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, category);
+
+        // 조회된 게시글들을 DTO로 변환
+        List<ArticleDto.Response> articleResponseList = articles.stream()
+                .map(ArticleDto.Response::new)
+                .collect(Collectors.toList());
+
+        return articleResponseList;
+    }
+
 
     private ArticleDetailsEntity getArticleDetails(int articleDetailsId) {
         return articleDetailsRepository.findById(articleDetailsId)
