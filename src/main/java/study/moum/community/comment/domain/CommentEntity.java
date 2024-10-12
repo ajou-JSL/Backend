@@ -29,4 +29,9 @@ public class CommentEntity {
 
     @Column(name = "content")
     private String content;
+
+
+    public void updateComment(String newContent){
+        this.content = newContent;
+    }
 }

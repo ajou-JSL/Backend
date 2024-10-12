@@ -30,7 +30,11 @@ public enum ErrorCode {
 
     // Article
     ARTICLE_NOT_FOUND(404,"AT001","게시글을 찾을 수 없습니다."),
-    ARTICLE_ALREADY_DELETED(404,"AT002","이미 삭제된 게시글입니다.");
+    ARTICLE_ALREADY_DELETED(404,"AT002","이미 삭제된 게시글입니다."),
+
+    // Comment
+    COMMENT_NOT_FOUND(404,"CM001","댓글을 찾을 수 없습니다."),
+    COMMENT_ALREADY_DELETED(404,"CM002","이미 삭제된 댓글입니다.");
 
     private final int status;
     private final String code;
