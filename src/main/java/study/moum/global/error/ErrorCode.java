@@ -21,13 +21,13 @@ public enum ErrorCode {
     NEED_LOGIN(401, "M004", "로그인을 해야합니다."),
     AUTHENTICATION_NOT_FOUND(401, "M005", "인증되지 않은 회원입니다."),
     MEMBER_ALREADY_LOGOUT(400, "M006", "이미 로그아웃 하였습니다."),
-    MEMBER_ALREADY_EXISTS(400, "M007", "이미 회원가입 완료한 이메일입니다."),
 
     // Auth
     REFRESH_TOKEN_INVALID(400, "A001", "유효하지 않은 refresh 토큰 입니다."),
     JWT_TOKEN_EXPIRED(401, "A002", "jwt 토큰이 만료되었습니다."),
 
     EMAIL_VERIFY_FAILED(400,"E001","이메일 인증이 실패하였습니다."),
+    EMAIL_ALREADY_VERIFIED(409, "E001", "이미 인증 완료한 이메일입니다."),
 
     // Article
     ARTICLE_NOT_FOUND(404,"AT001","게시글을 찾을 수 없습니다."),

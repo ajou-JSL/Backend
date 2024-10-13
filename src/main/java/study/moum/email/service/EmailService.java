@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
-import study.moum.global.error.exception.MemberAlreadySignedUpException;
+import study.moum.global.error.exception.AlreadyVerifiedEmailException;
 import study.moum.redis.util.RedisUtil;
 
 import java.util.UUID;
@@ -33,23 +32,21 @@ public class EmailService {
         message.setText("이메일 인증코드: "+code);
         message.setFrom(sender);
 
-        return  message;
+        return message;
     }
 
     public void sendMail(String email, String code) throws Exception{
 
-        MemberEntity member = memberRepository.findByEmail(email);
-        if(member != null){
-            System.out.println("============================"+member.getEmail());
-            throw new MemberAlreadySignedUpException();
+        Boolean isExist = memberRepository.existsByEmail(email);
+        if(isExist){
+            throw new AlreadyVerifiedEmailException();
         }
 
         try{
             MimeMessage mimeMessage = createMessage(email, code);
             javaMailSender.send(mimeMessage);
         }catch (MailException mailException){
-            mailException.printStackTrace();
-            throw new IllegalAccessException();
+            throw new RuntimeException();
         }
     }
 
@@ -58,6 +55,6 @@ public class EmailService {
         sendMail(email,code);
 
         redisUtil.setDataExpire(email,code,60*1L); // {key,value} 1분동안 저장.
-        return  code;
+        return code;
     }
 }
