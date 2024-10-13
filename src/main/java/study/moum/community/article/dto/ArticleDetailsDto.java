@@ -40,6 +40,7 @@ public class ArticleDetailsDto {
     }
 
     @Getter
+    @AllArgsConstructor
     public static class Response{
         private final int id;
         private final String title;
