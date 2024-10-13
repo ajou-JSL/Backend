@@ -1,10 +1,7 @@
 package study.moum.auth.domain.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Builder
@@ -28,7 +25,8 @@ public class MemberEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @NotEmpty @NotNull @Email
+    @NotEmpty @NotNull
+    @Pattern(regexp = "^[\\w!#$%&'*+/=?`{|}~^.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식이 올바르지 않습니다.")
     @Column(name = "email", nullable = false)
     private String email;
 

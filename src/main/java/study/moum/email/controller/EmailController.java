@@ -1,5 +1,6 @@
 package study.moum.email.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class EmailController {
     private final EmailService emailService;
 
     @PostMapping("/send-mail")
-    public ResponseEntity<?> emailAuthentification (@RequestBody EmailDto.Request emailRequestDto) throws Exception {
+    public ResponseEntity<?> emailAuthentification (@Valid @RequestBody EmailDto.Request emailRequestDto) throws Exception {
         String verifyCode = emailService.sendCertificationMail(emailRequestDto.getEmail());
 
         ResultResponse resultResponse = ResultResponse.of(ResponseCode.EMAIL_SEND_SUCCESS, /*verifyCode*/emailRequestDto.getEmail());

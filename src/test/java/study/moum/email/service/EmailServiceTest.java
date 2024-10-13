@@ -1,4 +1,4 @@
-package study.moum.auth.service;
+package study.moum.email.service;
 
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.email.service.EmailService;
 import study.moum.global.error.exception.AlreadyVerifiedEmailException;
+import study.moum.global.error.exception.NoAuthorityException;
 import study.moum.redis.util.RedisUtil;
 
 
@@ -47,7 +48,7 @@ class EmailServiceTest {
 
         when(memberRepository.existsByEmail(email)).thenReturn(true); // 중복된 이메일 체크 걸림
 
-        // Then
+        // when, then
         assertThrows(AlreadyVerifiedEmailException.class, () -> {
             emailService.sendCertificationMail(email);
         });
@@ -78,14 +79,14 @@ class EmailServiceTest {
     @Test
     @DisplayName("메일 전송 중 예외 발생 테스트")
     void SendMailFail_RuntimeException() throws Exception {
-        // Given
+        // given
         String email = "test@example.com";
 
         when(memberRepository.existsByEmail(email)).thenReturn(false);  // 중복 이메일 아님
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
         doThrow(new RuntimeException("Mail sending failed")).when(javaMailSender).send(any(MimeMessage.class));
 
-        // When & Then
+        // when, then
         assertThrows(RuntimeException.class, () -> {
             emailService.sendCertificationMail(email);
         });

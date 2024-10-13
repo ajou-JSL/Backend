@@ -13,9 +13,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import study.moum.email.controller.EmailController;
 import study.moum.email.dto.EmailDto;
 import study.moum.email.service.EmailService;
+import study.moum.global.error.exception.NoAuthorityException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class EmailControllerTest {
@@ -47,11 +51,14 @@ class EmailControllerTest {
         // when
         when(emailService.sendCertificationMail(validEmail)).thenReturn("123456");
 
-        // When & Then
+        // then
         mockMvc.perform(post("/send-mail")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("인증 이메일 발송 성공하였습니다."))
+                .andDo(print());
 
         verify(emailService).sendCertificationMail(validEmail);
     }
@@ -59,28 +66,32 @@ class EmailControllerTest {
     @Test
     @DisplayName("이메일 형식이 잘못된 경우 실패 테스트")
     void EmailSendFail_InvalidEmailForm() throws Exception {
-        // Given
+        // given
         String invalidEmail = "invalid-email-form";
         EmailDto.Request request = new EmailDto.Request();
         request.setEmail(invalidEmail);
 
-        // When & Then
+        // then
         mockMvc.perform(post("/send-mail")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
     @Test
     @DisplayName("이메일이 비어있는 경우 실패 테스트")
     void EmailSendFail_EmptyEmailForm() throws Exception {
-        // Given
-        EmailDto.Request request = new EmailDto.Request(); // 이메일이 설정되지 않음
+        // given
+        String emptyEmail = "";
+        EmailDto.Request request = new EmailDto.Request();
+        request.setEmail(emptyEmail);
 
-        // When & Then
+        // when, then
         mockMvc.perform(post("/send-mail")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 }

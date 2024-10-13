@@ -45,8 +45,8 @@ public class EmailService {
         try{
             MimeMessage mimeMessage = createMessage(email, code);
             javaMailSender.send(mimeMessage);
-        }catch (MailException mailException){
-            throw new RuntimeException();
+        } catch (MailException mailException) {
+            throw new RuntimeException("메일 전송에 실패했습니다.");
         }
     }
 
