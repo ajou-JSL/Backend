@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import study.moum.auth.domain.CustomUserDetails;
+import study.moum.community.article.domain.ArticleCategories;
 import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.community.article.service.ArticleService;
@@ -104,26 +105,16 @@ public class ArticleController {
     }
 
     /**
+     * 게시글 목록 카테고리 필터링 조회 API
      *
-     * 자유게시판 게시글 목록 조회 API
-     *
+     * @param category 게시글 카테고리 (FREE_TALKING_BOARD 또는 RECRUIT_BOARD)
+     * @return 게시글 리스트
      */
-    @GetMapping("/api/articles/freetalking")
-    public ResponseEntity<ResultResponse> getFreeTalkingArticles(){
-        List<ArticleDto.Response> articleList = articleService.getFreeTalkingArticles();
+    @GetMapping("/api/articles/category")
+    public ResponseEntity<ResultResponse> getArticles(
+            @RequestParam(required = true) ArticleCategories category) {
 
-        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
-    }
-
-    /**
-     *
-     * 모집게시판 게시글 목록 조회 API
-     *
-     */
-    @GetMapping("/api/articles/recruiting")
-    public ResponseEntity<ResultResponse> getRecruitingArticles(){
-        List<ArticleDto.Response> articleList = articleService.getRecruitingArticles();
+        List<ArticleDto.Response> articleList = articleService.getArticlesByCategory(category);
 
         ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
