@@ -172,37 +172,27 @@ public class ArticleService {
     }
 
     /**
-     * 자유게시판 게시글 목록 조회 메서드
+     * 카테고리에 따른 게시글 목록 조회 메서드
      *
-     * @return 자유게시판 게시글 리스트
+     * @param category 게시글 카테고리
+     * @return 카테고리에 해당하는 게시글 리스트
      */
     @Transactional(readOnly = true)
-    public List<ArticleDto.Response> getFreeTalkingArticles() {
-        List<ArticleEntity> articles = articleRepositoryCustom.findFreeTalkingArticles();
+    public List<ArticleDto.Response> getArticlesByCategory(ArticleCategories category) {
+        List<ArticleEntity> articles;
+
+        if (category == ArticleCategories.FREE_TALKING_BOARD) {
+            articles = articleRepositoryCustom.findFreeTalkingArticles();
+        } else if (category == ArticleCategories.RECRUIT_BOARD) {
+            articles = articleRepositoryCustom.findRecruitingdArticles();
+        } else {
+            throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
+        }
 
         // 조회된 게시글들을 DTO로 변환
-        List<ArticleDto.Response> articleResponseList = articles.stream()
+        return articles.stream()
                 .map(ArticleDto.Response::new)
                 .collect(Collectors.toList());
-
-        return articleResponseList;
-    }
-
-    /**
-     * 모집게시판 게시글 목록 조회 메서드
-     *
-     * @return 모집게시판 게시글 리스트
-     */
-    @Transactional(readOnly = true)
-    public List<ArticleDto.Response> getRecruitingArticles() {
-        List<ArticleEntity> articles = articleRepositoryCustom.findRecruitingdArticles();
-
-        // 조회된 게시글들을 DTO로 변환
-        List<ArticleDto.Response> articleResponseList = articles.stream()
-                .map(ArticleDto.Response::new)
-                .collect(Collectors.toList());
-
-        return articleResponseList;
     }
 
     /**
