@@ -67,18 +67,22 @@ class ArticleControllerTest {
     @Test
     @DisplayName("카테고리별 게시글 목록 조회 테스트")
     void getArticlesByCategoryTest() throws Exception {
-        // given : 게시글 리스트 생성
+        ArticleCategories category = ArticleCategories.FREE_TALKING_BOARD;
+
+        // given: 게시글 리스트 생성
         List<ArticleDto.Response> mockResponse = List.of(
                 new ArticleDto.Response(1, "Title 1", ArticleCategories.FREE_TALKING_BOARD, 10, 5, 3, "author1"),
                 new ArticleDto.Response(2, "Title 2", ArticleCategories.FREE_TALKING_BOARD, 15, 3, 4, "author2"),
                 new ArticleDto.Response(3, "Title 3", ArticleCategories.RECRUIT_BOARD, 20, 2, 1, "author3")
         );
 
-        // when
-        when(articleService.getFreeTalkingArticles()).thenReturn(mockResponse);
+        // when: 서비스의 메서드 호출 시 mockResponse를 반환하도록 설정
+        when(articleService.getArticlesByCategory(category)).thenReturn(mockResponse);
 
-        // then : 자유게시판 목록 조회
-        mockMvc.perform(get("/api/articles/freetalking"))
+        // then: 카테고리별 게시글 목록 조회
+        // mockMvc.perform(get("/api/articles/category")
+        //                .param("category", category.name()))  // 카테고리 값을 파라미터로 추가
+        mockMvc.perform(get("/api/articles/category?category=" + category))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].title").value("Title 1"))
                 .andExpect(jsonPath("$.data[0].category").value("FREE_TALKING_BOARD"))
@@ -86,10 +90,10 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.data[1].category").value("FREE_TALKING_BOARD"));
     }
 
+
     @Test
     @DisplayName("게시글 상세 조회 테스트")
     void getArticleByIdTest() throws Exception {
-
         // given : Author 생성
         MemberEntity author = MemberEntity.builder()
                 .id(1)
@@ -146,7 +150,7 @@ class ArticleControllerTest {
                 .role("ROLE_ADMIN")
                 .build();
 
-
+        // given : Article 생성
         ArticleDto.Request request = ArticleDto.Request.builder()
                 .id(1)
                 .category(ArticleCategories.FREE_TALKING_BOARD)
@@ -156,7 +160,8 @@ class ArticleControllerTest {
 
         ArticleDto.Response response = new ArticleDto.Response(1, "test title", ArticleCategories.FREE_TALKING_BOARD, 0, 0, 0, author.getUsername());
 
-        when(articleService.postArticle(any(), Mockito.anyString())).thenReturn(response);
+        // when(articleService.postArticle(any(), Mockito.anyString())).thenReturn(response);
+        when(articleService.postArticle(request, author.getUsername())).thenReturn(response);
 
         // Then
         mockMvc.perform(post("/api/articles")
@@ -164,7 +169,7 @@ class ArticleControllerTest {
                         .content(objectMapper.writeValueAsString(request))
                         .with(csrf())) // CSRF 토큰 추가
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.title").value("New Title"));
+                .andExpect(jsonPath("$.data.title").value("test title"));
     }
 }
 

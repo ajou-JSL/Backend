@@ -1,263 +1,355 @@
-//package study.moum.community.article.service;
-//
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import study.moum.auth.domain.entity.MemberEntity;
-//import study.moum.auth.domain.repository.MemberRepository;
-//import study.moum.community.article.domain.*;
-//import study.moum.community.article.dto.ArticleDetailsDto;
-//import study.moum.community.article.dto.ArticleDto;
-//import study.moum.global.error.exception.CustomException;
-//import study.moum.global.error.exception.NeedLoginException;
-//
-//import java.util.Optional;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.*;
-//
-//class ArticleServiceTest {
-//
-//    @InjectMocks
-//    private ArticleService articleService;
-//
-//    @Mock
-//    private ArticleRepository articleRepository;
-//
-//    @Mock
-//    private ArticleDetailsRepository articleDetailsRepository;
-//
-//    @Mock
-//    private MemberRepository memberRepository;
-//
-//    @Mock
-//    private ArticleRepositoryCustom articleRepositoryCustom;
-//
-//    private MemberEntity author;
-//
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//        author = new MemberEntity();
-//        author.setUsername("testUser");
-//    }
-//
-//    @Test
-//    void postArticle_Success() {
-//        // given
-//        ArticleDto.Request articleRequestDto = ArticleDto.Request.builder()
-//                .title("Test Title")
-//                .category(ArticleCategories.FREE_TALKING)
-//                .content("Test Content")
-//                .build();
-//
-//        when(memberRepository.findByUsername("testUser")).thenReturn(author);
-//        when(articleRepository.save(any(ArticleEntity.class))).thenReturn(new ArticleEntity());
-//        when(articleDetailsRepository.save(any(ArticleDetailsEntity.class))).thenReturn(new ArticleDetailsEntity());
-//
-//        // when
-//        ArticleDto.Response response = articleService.postArticle(articleRequestDto, "testUser");
-//
-//        // then
-//        assertNotNull(response);
-//        verify(articleRepository).save(any(ArticleEntity.class));
-//        verify(articleDetailsRepository).save(any(ArticleDetailsEntity.class));
-//    }
-//
-//    @Test
-//    void postArticle_NeedLoginException() {
-//        // given
-//        ArticleDto.Request articleRequestDto = ArticleDto.Request.builder()
-//                .title("Test Title")
-//                .category(ArticleCategories.FREE_TALKING)
-//                .content("Test Content")
-//                .build();
-//
-//        // when
-//        Exception exception = assertThrows(NeedLoginException.class, () -> {
-//            articleService.postArticle(articleRequestDto, null);
-//        });
-//
-//        // then
-//        assertNotNull(exception);
-//    }
-//
-//    @Test
-//    void getArticleById_Success() {
-//        // given
-//        int articleId = 1;
-//        ArticleDetailsEntity articleDetails = new ArticleDetailsEntity();
-//        ArticleEntity article = new ArticleEntity();
-//        article.setId(articleId);
-//        article.setAuthor(author);
-//        when(articleDetailsRepository.findById(articleId)).thenReturn(Optional.of(articleDetails));
-//        when(articleRepository.findById(articleId)).thenReturn(Optional.of(article));
-//
-//        // when
-//        ArticleDetailsDto.Response response = articleService.getArticleById(articleId);
-//
-//        // then
-//        assertNotNull(response);
-//        assertEquals(articleId, response.getId());
-//        verify(articleDetailsRepository).findById(articleId);
-//    }
-//
-//    @Test
-//    void getArticleById_ArticleNotFound() {
-//        // given
-//        int articleId = 1;
-//        when(articleDetailsRepository.findById(articleId)).thenReturn(Optional.empty());
-//
-//        // when
-//        Exception exception = assertThrows(CustomException.class, () -> {
-//            articleService.getArticleById(articleId);
-//        });
-//
-//        // then
-//        assertNotNull(exception);
-//    }
-//
-//    @Test
-//    void getArticleList_Success() {
-//        // given
-//        when(articleRepository.findAll()).thenReturn(List.of(new ArticleEntity()));
-//
-//        // when
-//        List<ArticleDto.Response> articleList = articleService.getArticleList();
-//
-//        // then
-//        assertNotNull(articleList);
-//        assertFalse(articleList.isEmpty());
-//    }
-//
-//    @Test
-//    void updateArticleDetails_Success() {
-//        // given
-//        int articleId = 1;
-//        ArticleDetailsDto.Request articleDetailsRequestDto = ArticleDetailsDto.Request.builder()
-//                .title("Updated Title")
-//                .content("Updated Content")
-//                .category(ArticleCategories.FREE_TALKING)
-//                .build();
-//
-//        ArticleDetailsEntity articleDetails = new ArticleDetailsEntity();
-//        ArticleEntity article = new ArticleEntity();
-//        article.setAuthor(author);
-//        when(articleDetailsRepository.findById(articleId)).thenReturn(Optional.of(articleDetails));
-//        when(articleRepository.findById(articleId)).thenReturn(Optional.of(article));
-//
-//        // when
-//        ArticleDetailsDto.Response response = articleService.updateArticleDetails(articleId, articleDetailsRequestDto, "testUser");
-//
-//        // then
-//        assertNotNull(response);
-//        verify(articleDetailsRepository).save(articleDetails);
-//    }
-//
-//    @Test
-//    void updateArticleDetails_NoAuthority() {
-//        // given
-//        int articleId = 1;
-//        ArticleDetailsDto.Request articleDetailsRequestDto = new ArticleDetailsDto.Request();
-//        articleDetailsRequestDto.setTitle("Updated Title");
-//
-//        ArticleDetailsEntity articleDetails = new ArticleDetailsEntity();
-//        ArticleEntity article = new ArticleEntity();
-//        MemberEntity anotherAuthor = new MemberEntity();
-//        anotherAuthor.setUsername("anotherUser");
-//        article.setAuthor(anotherAuthor);
-//        when(articleDetailsRepository.findById(articleId)).thenReturn(Optional.of(articleDetails));
-//        when(articleRepository.findById(articleId)).thenReturn(Optional.of(article));
-//
-//        // when
-//        Exception exception = assertThrows(CustomException.class, () -> {
-//            articleService.updateArticleDetails(articleId, articleDetailsRequestDto, "testUser");
-//        });
-//
-//        // then
-//        assertNotNull(exception);
-//    }
-//
-//    @Test
-//    void deleteArticleDetails_Success() {
-//        // given
-//        int articleId = 1;
-//        ArticleDetailsEntity articleDetails = new ArticleDetailsEntity();
-//        ArticleEntity article = new ArticleEntity();
-//        article.setAuthor(author);
-//        when(articleDetailsRepository.findById(articleId)).thenReturn(Optional.of(articleDetails));
-//        when(articleRepository.findById(articleId)).thenReturn(Optional.of(article));
-//
-//        // when
-//        ArticleDto.Response response = articleService.deleteArticleDetails(articleId, "testUser");
-//
-//        // then
-//        assertNotNull(response);
-//        verify(articleDetailsRepository).deleteById(articleId);
-//        verify(articleRepository).deleteById(articleId);
-//    }
-//
-//    @Test
-//    void deleteArticleDetails_NoAuthority() {
-//        // given
-//        int articleId = 1;
-//        ArticleDetailsEntity articleDetails = new ArticleDetailsEntity();
-//        ArticleEntity article = new ArticleEntity();
-//        MemberEntity anotherAuthor = new MemberEntity();
-//        anotherAuthor.setUsername("anotherUser");
-//        article.setAuthor(anotherAuthor);
-//        when(articleDetailsRepository.findById(articleId)).thenReturn(Optional.of(articleDetails));
-//        when(articleRepository.findById(articleId)).thenReturn(Optional.of(article));
-//
-//        // when
-//        Exception exception = assertThrows(CustomException.class, () -> {
-//            articleService.deleteArticleDetails(articleId, "testUser");
-//        });
-//
-//        // then
-//        assertNotNull(exception);
-//    }
-//
-//    @Test
-//    void getFreeTalkingArticles_Success() {
-//        // given
-//        when(articleRepositoryCustom.findFreeTalkingArticles()).thenReturn(List.of(new ArticleEntity()));
-//
-//        // when
-//        List<ArticleDto.Response> articles = articleService.getFreeTalkingArticles();
-//
-//        // then
-//        assertNotNull(articles);
-//        assertFalse(articles.isEmpty());
-//    }
-//
-//    @Test
-//    void getRecruitingArticles_Success() {
-//        // given
-//        when(articleRepositoryCustom.findRecruitingdArticles()).thenReturn(List.of(new ArticleEntity()));
-//
-//        // when
-//        List<ArticleDto.Response> articles = articleService.getRecruitingArticles();
-//
-//        // then
-//        assertNotNull(articles);
-//        assertFalse(articles.isEmpty());
-//    }
-//
-//    @Test
-//    void getArticleWithTitleSearch_Success() {
-//        // given
-//        String keyword = "searchKeyword";
-//        when(articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, null)).thenReturn(List.of(new ArticleEntity()));
-//
-//        // when
-//        List<ArticleDto.Response> articles = articleService.getArticleWithTitleSearch(keyword, null);
-//
-//        // then
-//        assertNotNull(articles);
-//        assertFalse(articles.isEmpty());
-//    }
-//}
+package study.moum.community.article.service;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import study.moum.auth.domain.entity.MemberEntity;
+import study.moum.auth.domain.repository.MemberRepository;
+import study.moum.community.article.domain.*;
+import study.moum.community.article.dto.ArticleDetailsDto;
+import study.moum.community.article.dto.ArticleDto;
+import study.moum.global.error.exception.NeedLoginException;
+import study.moum.global.error.exception.NoAuthorityException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+class ArticleServiceTest {
+
+    @InjectMocks
+    private ArticleService articleService;
+
+    @Mock
+    private ArticleRepository articleRepository;
+
+    @Mock
+    private ArticleDetailsRepository articleDetailsRepository;
+
+    @Mock
+    private MemberRepository memberRepository;
+
+    @Mock
+    private ArticleRepositoryCustom articleRepositoryCustom;
+
+    private MemberEntity author;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        // Author 객체 생성
+        author = MemberEntity.builder()
+                .id(1)
+                .email("test@gmail.com")
+                .username("testAuthor")
+                .password("12345123")
+                .role("ROLE_ADMIN")
+                .build();
+    }
+
+    @Test
+    @DisplayName("게시글 생성 테스트 - 로그인 사용자")
+    void createArticleSuccess_LoggedInUser() {
+        // given: Article 생성
+        ArticleDto.Request request = ArticleDto.Request.builder()
+                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .author(author)
+                .title("test title")
+                .build();
+
+        // Mock 동작
+        when(memberRepository.findByUsername(author.getUsername())).thenReturn(author); // db에 있는 유저
+
+        when(articleRepository.save(any(ArticleEntity.class))).thenAnswer(invocation -> {
+            ArticleEntity article = invocation.getArgument(0);
+            article.setId(1); // 가상의 id
+            return article;
+        });
+        when(articleDetailsRepository.save(any(ArticleDetailsEntity.class))).thenReturn(new ArticleDetailsEntity());
+
+        // when
+        ArticleDto.Response actualResponse = articleService.postArticle(request, author.getUsername());
+
+        // then
+        assertEquals("test title", actualResponse.getTitle());
+        assertEquals(ArticleCategories.FREE_TALKING_BOARD, actualResponse.getCategory());
+    }
+
+    @Test
+    @DisplayName("게시글 생성 테스트 - 로그인하지 않은 사용자")
+    void createArticleFail_NeedLoginException() {
+        // given : Article 생성
+        ArticleDto.Request request = ArticleDto.Request.builder()
+                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .author(author)
+                .title("test title")
+                .build();
+
+        // Mock 동작 : db에 없는 username
+        when(memberRepository.findByUsername("not_member_user")).thenReturn(null);
+
+        // when & then
+        assertThrows(NeedLoginException.class, () -> {
+            articleService.postArticle(request, "로그인을 해야합니다.");
+        });
+    }
+
+    @Test
+    @DisplayName("게시글 조회 테스트") // 해당 메서드에서 article, articleDetails 둘 다 조회하고있는거 생각
+    void getArticleById() {
+        // given: Article Entity, ArticleDetails Entity 생성
+        ArticleEntity article = ArticleEntity.builder()
+                .id(1)
+                .title("test title")
+                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .author(author)
+                .build();
+
+        ArticleDetailsEntity articleDetails = ArticleDetailsEntity.builder()
+                .id(1)
+                .content("test content")
+                .comments(new ArrayList<>())
+                .articleId(article.getId())
+                .build();
+
+        // Mock 동작
+        when(articleRepository.findById(1)).thenReturn(Optional.of(article));
+        when(articleDetailsRepository.findById(1)).thenReturn(Optional.of(articleDetails));
+
+        // when
+        ArticleDetailsDto.Response response = articleService.getArticleById(1);
+
+        // then
+        assertNotNull(response);
+        assertEquals(1, response.getId());
+        assertEquals("test title", response.getTitle());
+        assertEquals("test content", response.getContent());
+    }
+
+
+    @Test
+    @DisplayName("게시글 목록 조회 테스트")
+    void getArticleList() {
+        // given : 게시글 리스트 생성
+        List<ArticleEntity> mockArticle = List.of(
+                ArticleEntity.builder()
+                        .id(1)
+                        .title("test title 1")
+                        .author(author)
+                        .build(),
+                ArticleEntity.builder()
+                        .id(2)
+                        .title("test title 2")
+                        .author(author)
+                        .build()
+        );
+
+        // Mock 동작
+        when(articleRepository.findAll()).thenReturn(mockArticle);
+
+        // when
+        List<ArticleDto.Response> responseList = articleService.getArticleList();
+
+        // then
+        assertEquals(2, responseList.size()); // list 크기
+        assertEquals("test title 1", responseList.get(0).getTitle());
+        assertEquals("test title 2", responseList.get(1).getTitle());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 성공 - 권한없으면 에러")
+    void updateArticleWithoutAuthorization() {
+        // given : Article, Article Details 생성
+        ArticleEntity article = ArticleEntity.builder()
+                .id(1)
+                .title("title")
+                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .author(author)
+                .build();
+
+        ArticleDetailsEntity articleDetails = ArticleDetailsEntity.builder()
+                .id(1)
+                .content("content")
+                .comments(new ArrayList<>())
+                .articleId(article.getId())
+                .build();
+
+        // given : update request dto 생성, details에서 title 수정 가능해야함
+        ArticleDetailsDto.Request updateArticleDetailsRequest = ArticleDetailsDto.Request.builder()
+                .id(1)
+                .title("updated title")
+                .content("updated content")
+                .category(ArticleCategories.RECRUIT_BOARD)
+                .build();
+
+        // Mock 동작 : repository 에서 탐색
+        when(articleRepository.findById(1)).thenReturn(Optional.of(article));
+        when(articleDetailsRepository.findById(1)).thenReturn(Optional.of(articleDetails));
+
+        // when : 게시글 수정 요청
+        ArticleDetailsDto.Response response = articleService.updateArticleDetails(1, updateArticleDetailsRequest, author.getUsername());
+
+        // then
+        assertNotNull(response);
+        assertEquals("updated title", response.getTitle());
+        assertEquals("updated title", article.getTitle()); // details에서 수정한게 article에 잘 들어가는지
+        assertEquals("updated content", response.getContent());
+        assertEquals("RECRUIT_BOARD", response.getCategory());
+
+        assertThrows(NoAuthorityException.class, () -> {
+            articleService.updateArticleDetails(1, updateArticleDetailsRequest, "not_author_user");
+        });
+    }
+
+
+
+    @Test
+    @DisplayName("게시글 삭제 테스트 - 권한 없으면 에러") // article, details 둘 다 삭제되는지 봐야함
+    void deleteArticle() {
+        // given : Article, Article Details 생성
+        ArticleEntity article = ArticleEntity.builder()
+                .id(1)
+                .title("title")
+                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .author(author)
+                .build();
+
+        ArticleDetailsEntity articleDetails = ArticleDetailsEntity.builder()
+                .id(1)
+                .content("content")
+                .comments(new ArrayList<>())
+                .articleId(article.getId())
+                .build();
+
+        // Mock 동작 : repository 에서 탐색
+        when(articleRepository.findById(1)).thenReturn(Optional.of(article));
+        when(articleDetailsRepository.findById(1)).thenReturn(Optional.of(articleDetails));
+
+        // when
+        ArticleDto.Response response = articleService.deleteArticleDetails(1, author.getUsername());
+
+        // then
+        assertEquals("title", response.getTitle());
+
+        verify(articleRepository).deleteById(1);
+        verify(articleDetailsRepository).deleteById(1);
+
+        assertThrows(NoAuthorityException.class, () -> {
+            articleService.deleteArticleDetails(1, "not_author_user");
+        });
+    }
+
+    @Test
+    @DisplayName("카테고리에 따른 게시글 목록 조회 테스트")
+    void getArticlesByCategory() {
+        // given : 게시글 리스트 생성
+        List<ArticleEntity> mockArticle = List.of(
+                ArticleEntity.builder()
+                        .id(1)
+                        .title("test title 1")
+                        .category(ArticleCategories.FREE_TALKING_BOARD)
+                        .author(author)
+                        .build(),
+                ArticleEntity.builder()
+                        .id(2)
+                        .title("test title 2")
+                        .category(ArticleCategories.FREE_TALKING_BOARD)
+                        .author(author)
+                        .build(),
+                ArticleEntity.builder()
+                        .id(3)
+                        .title("test title 3")
+                        .category(ArticleCategories.RECRUIT_BOARD)
+                        .author(author)
+                        .build(),
+                ArticleEntity.builder()
+                        .id(4)
+                        .title("test title 4")
+                        .category(ArticleCategories.RECRUIT_BOARD)
+                        .author(author)
+                        .build()
+        );
+
+        // Mock 동작
+        when(articleRepositoryCustom.findFreeTalkingArticles()).thenReturn(mockArticle); // 자유게시판
+        when(articleRepositoryCustom.findRecruitingdArticles()).thenReturn(mockArticle); // 모집게시판
+
+        // when
+        List<ArticleDto.Response> Freearticles = articleService.getArticlesByCategory(ArticleCategories.FREE_TALKING_BOARD);
+        List<ArticleDto.Response> Recruitarticles = articleService.getArticlesByCategory(ArticleCategories.RECRUIT_BOARD);
+
+        // then
+        assertEquals(4, mockArticle.size());
+        assertEquals("test title 1", Freearticles.get(0).getTitle());
+        assertEquals(ArticleCategories.FREE_TALKING_BOARD, Freearticles.get(0).getCategory());
+        assertEquals("test title 3", Recruitarticles.get(2).getTitle());
+        assertEquals(ArticleCategories.RECRUIT_BOARD, Recruitarticles.get(2).getCategory());
+    }
+
+    @Test
+    @DisplayName("게시글 제목으로 검색 테스트")
+    void getArticleWithTitleSearch() {
+        // given : 게시글 리스트 생성
+        List<ArticleEntity> mockArticle = List.of(
+                ArticleEntity.builder()
+                        .id(1)
+                        .title("test title 1")
+                        .category(ArticleCategories.FREE_TALKING_BOARD)
+                        .author(author)
+                        .build(),
+                ArticleEntity.builder()
+                        .id(2)
+                        .title("test title 2")
+                        .category(ArticleCategories.FREE_TALKING_BOARD)
+                        .author(author)
+                        .build(),
+                ArticleEntity.builder()
+                        .id(3)
+                        .title("test title 3")
+                        .category(ArticleCategories.RECRUIT_BOARD)
+                        .author(author)
+                        .build(),
+                ArticleEntity.builder()
+                        .id(4)
+                        .title("test title 4")
+                        .category(ArticleCategories.RECRUIT_BOARD)
+                        .author(author)
+                        .build()
+        );
+
+        // given : 검색어 설정
+        String keyword = "test";
+
+
+        /*
+            todo : 이거 삽질했는데 왜 되는지 모름. 나중에 자세히 다시 보기
+         */
+        // Mock 동작
+        List<ArticleEntity> articleList = mockArticle.stream()
+                .filter(article -> article.getTitle().contains(keyword) &&
+                        article.getCategory() == ArticleCategories.FREE_TALKING_BOARD)
+                .collect(Collectors.toList());
+
+        when(articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, "FREE_TALKING_BOARD"))
+                .thenReturn(articleList);
+
+        // when
+        List<ArticleDto.Response> response = articleService.getArticleWithTitleSearch(keyword, "FREE_TALKING_BOARD");
+
+        // then
+        assertEquals(2, response.size());
+        assertEquals(ArticleCategories.FREE_TALKING_BOARD,response.get(0).getCategory());
+        assertEquals(ArticleCategories.FREE_TALKING_BOARD,response.get(1).getCategory());
+    }
+
+}
