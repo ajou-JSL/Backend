@@ -20,11 +20,12 @@ public enum ErrorCode {
     NO_AUTHORITY(403, "M003", "권한이 없습니다."),
     NEED_LOGIN(401, "M004", "로그인을 해야합니다."),
     AUTHENTICATION_NOT_FOUND(401, "M005", "인증되지 않은 회원입니다."),
-    MEMBER_ALREADY_LOGOUT(400, "M006", "이미 로그아웃 하였습니다."),
+    MEMBER_ALREADY_LOGOUT(400, "M006", "이미 로그아웃 하였습니다. 먼저 로그인을 해주세요."),
 
     // Auth
-    REFRESH_TOKEN_INVALID(400, "A001", "유효하지 않은 refresh 토큰 입니다."),
-    JWT_TOKEN_EXPIRED(401, "A002", "jwt 토큰이 만료되었습니다."),
+    LOGIN_FAIL(400, "A001", "아이디 또는 비밀번호가 유효하지 않습니다."),
+    REFRESH_TOKEN_INVALID(400, "A002", "유효하지 않은 refresh 토큰 입니다."),
+    JWT_TOKEN_EXPIRED(401, "A003", "jwt 토큰이 만료되었습니다."),
 
     EMAIL_VERIFY_FAILED(400,"E001","이메일 인증이 실패하였습니다."),
     EMAIL_ALREADY_VERIFIED(409, "E001", "이미 인증 완료한 이메일입니다."),

@@ -90,8 +90,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.BAD_CREDENTIALS);
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.LOGIN_FAIL);
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
     }

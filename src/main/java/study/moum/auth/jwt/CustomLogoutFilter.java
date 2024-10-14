@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.GenericFilterBean;
 import study.moum.auth.domain.repository.RefreshRepository;
+import study.moum.global.error.ErrorCode;
+import study.moum.global.error.ErrorResponse;
 import study.moum.global.response.ResponseCode;
 import study.moum.global.response.ResultResponse;
 
@@ -63,7 +65,10 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //refresh null check
         if (refresh == null) {
 
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.MEMBER_ALREADY_LOGOUT);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
             return;
         }
 
@@ -73,7 +78,10 @@ public class CustomLogoutFilter extends GenericFilterBean {
         } catch (ExpiredJwtException e) {
 
             //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.JWT_TOKEN_EXPIRED);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
             return;
         }
 
@@ -82,16 +90,21 @@ public class CustomLogoutFilter extends GenericFilterBean {
         if (!category.equals("refresh")) {
 
             //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.REFRESH_TOKEN_INVALID);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
             return;
         }
 
         //DB에 저장되어 있는지 확인
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
-
             //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.MEMBER_NOT_EXIST);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
             return;
         }
 
@@ -126,7 +139,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         ResultResponse resultResponse = ResultResponse.of(ResponseCode.LOGOUT_SUCCESS, null);
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json;charset=UTF-8");
-
         response.getWriter().write(new ObjectMapper().writeValueAsString(resultResponse));
     }
 }

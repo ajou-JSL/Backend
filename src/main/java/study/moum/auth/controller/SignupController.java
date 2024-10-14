@@ -17,7 +17,7 @@ import study.moum.global.response.ResultResponse;
 public class SignupController {
     private final SignupService signupService;
 
-    @PostMapping("/signup")
+    @PostMapping("/join")
     public ResponseEntity<ResultResponse> signupMember(@Valid @RequestBody MemberDto.Request memberRequestDto) {
 
         signupService.signupMember(memberRequestDto);
