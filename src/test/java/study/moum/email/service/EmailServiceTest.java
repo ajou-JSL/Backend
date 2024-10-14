@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mail.javamail.JavaMailSender;
 import study.moum.auth.domain.repository.MemberRepository;
+import study.moum.email.dto.EmailDto;
 import study.moum.email.service.EmailService;
 import study.moum.global.error.exception.AlreadyVerifiedEmailException;
 import study.moum.global.error.exception.NoAuthorityException;
@@ -45,12 +46,14 @@ class EmailServiceTest {
     void SendMailFail_AlreadyVerifiedEmail() {
         // Given
         String email = "duplicate@example.com";
+        EmailDto.Request emailDto = new EmailDto.Request();
+        emailDto.setEmail(email);
 
         when(memberRepository.existsByEmail(email)).thenReturn(true); // 중복된 이메일 체크 걸림
 
         // when, then
         assertThrows(AlreadyVerifiedEmailException.class, () -> {
-            emailService.sendCertificationMail(email);
+            emailService.sendCertificationMail(emailDto);
         });
 
         verify(memberRepository).existsByEmail(email);
@@ -62,13 +65,15 @@ class EmailServiceTest {
     void SendMailSuccess() throws Exception {
         // Given
         String email = "test@example.com";
+        EmailDto.Request emailDto = new EmailDto.Request();
+        emailDto.setEmail(email);
         String verificationCode = "123456";
 
         when(memberRepository.existsByEmail(email)).thenReturn(false);  // 중복 이메일 아님
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
 
         // When
-        emailService.sendCertificationMail(email);
+        emailService.sendCertificationMail(emailDto);
 
         // Then
         verify(memberRepository).existsByEmail(email);  // 중복 체크 호출 확인
@@ -81,6 +86,8 @@ class EmailServiceTest {
     void SendMailFail_RuntimeException() throws Exception {
         // given
         String email = "test@example.com";
+        EmailDto.Request emailDto = new EmailDto.Request();
+        emailDto.setEmail(email);
 
         when(memberRepository.existsByEmail(email)).thenReturn(false);  // 중복 이메일 아님
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
@@ -88,7 +95,7 @@ class EmailServiceTest {
 
         // when, then
         assertThrows(RuntimeException.class, () -> {
-            emailService.sendCertificationMail(email);
+            emailService.sendCertificationMail(emailDto);
         });
 
         verify(memberRepository).existsByEmail(email);  // 중복 체크 호출 확인

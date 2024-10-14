@@ -45,22 +45,25 @@ class EmailControllerTest {
     void EmailSendCodeSuccess() throws Exception {
         // Given
         String validEmail = "test@example.com";
-        EmailDto.Request request = new EmailDto.Request();
-        request.setEmail(validEmail);
+        EmailDto.Request emailDto = new EmailDto.Request();
+        emailDto.setEmail(validEmail);
 
         // when
-        when(emailService.sendCertificationMail(validEmail)).thenReturn("123456");
+        when(emailService.sendCertificationMail(emailDto)).thenReturn("123456");
 
         // then
         mockMvc.perform(post("/send-mail")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(emailDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.message").value("인증 이메일 발송 성공하였습니다."))
                 .andDo(print());
 
-        verify(emailService).sendCertificationMail(validEmail);
+        // Argument(s) are different: Wanted: Actual invocations have different arguments: 해결하기
+        // https://mag1c.tistory.com/455
+        // verify(emailService).sendCertificationMail(emailDto);
+        verify(emailService).sendCertificationMail(refEq(emailDto));
     }
 
     @Test
