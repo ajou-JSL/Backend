@@ -1,5 +1,6 @@
 package study.moum.community.article.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class ArticleController {
 
     @PostMapping("/api/articles")
     public ResponseEntity<ResultResponse> postArticle(
-            @RequestBody ArticleDto.Request articleRequestDto,
+            @Valid @RequestBody ArticleDto.Request articleRequestDto,
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
         if(customUserDetails == null){
@@ -65,7 +66,7 @@ public class ArticleController {
     @PatchMapping("/api/articles/{id}")
     public ResponseEntity<ResultResponse> updateArticle(
             @PathVariable int id,
-            @RequestBody ArticleDetailsDto.Request articleDetailsRequestDto,
+            @Valid @RequestBody ArticleDetailsDto.Request articleDetailsRequestDto,
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
         ArticleDetailsDto.Response articleResponse = articleService.updateArticleDetails(id, articleDetailsRequestDto, customUserDetails.getUsername());
