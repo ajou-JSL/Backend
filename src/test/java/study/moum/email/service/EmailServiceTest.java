@@ -1,5 +1,6 @@
 package study.moum.email.service;
 
+import jakarta.mail.Message;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +44,27 @@ class EmailServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
+
+    @Test
+    @DisplayName("이메일 메시지 생성 테스트")
+    void createMailMessage() throws Exception {
+        // given
+        String email = "test@example.com";
+        EmailDto.Request emailDto = new EmailDto.Request();
+        emailDto.setEmail(email);
+        String code = "123456";
+
+        when(memberRepository.existsByEmail(email)).thenReturn(false);  // 중복 이메일 아님
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage); // MimeMessage 생성
+        doNothing().when(javaMailSender).send(any(MimeMessage.class)); // send 메서드에 대한 동작 설정
+
+        // when
+        emailService.sendMail(emailDto, code);
+
+        // then
+        verify(javaMailSender).send(any(MimeMessage.class)); // send 메서드가 호출되었는지 확인
+    }
+
 
     @Test
     @DisplayName("이미 가입된 이메일로 인증 시도 시 실패 테스트")
