@@ -10,12 +10,15 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mail.javamail.JavaMailSender;
 import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.email.dto.EmailDto;
+import study.moum.email.dto.VerifyDto;
 import study.moum.email.service.EmailService;
 import study.moum.global.error.exception.AlreadyVerifiedEmailException;
+import study.moum.global.error.exception.CustomException;
 import study.moum.global.error.exception.NoAuthorityException;
 import study.moum.redis.util.RedisUtil;
 
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -100,5 +103,66 @@ class EmailServiceTest {
 
         verify(memberRepository).existsByEmail(email);  // 중복 체크 호출 확인
         verify(javaMailSender).send(any(MimeMessage.class));  // 메일 전송 시도 확인
+    }
+    @Test
+    @DisplayName("인증 코드 검증 성공")
+    void verifyCodeSuccess() {
+        // given
+        String email = "test@example.com";
+        String verifyCode = "123456";
+
+        VerifyDto.Request request = new VerifyDto.Request();
+        request.setEmail(email);
+        request.setVerifyCode(verifyCode);
+
+        // when
+        when(redisUtil.getData(email)).thenReturn(verifyCode);
+
+        // then
+        VerifyDto.Response response = emailService.verifyCode(request);
+
+        assertThat(response.getResult()).isTrue();
+        assertThat(response.getVerifyCode()).isEqualTo(verifyCode);
+        verify(redisUtil).deleteData(email);  // 인증 성공 시 중복 방지로 데이터 삭제 호출되는지 확인
+    }
+
+    @Test
+    @DisplayName("인증 코드가 존재하지 않는 경우 실패")
+    void verifyCodeFail_NoStoredCode() {
+        // given
+        String email = "test@example.com";
+        String wrongCode = "wrong-code";
+
+        VerifyDto.Request request = new VerifyDto.Request();
+        request.setEmail(email);
+        request.setVerifyCode(wrongCode);
+
+        // when
+        when(redisUtil.getData(email)).thenReturn(null);
+
+        // then
+        assertThrows(CustomException.class, () -> emailService.verifyCode(request));
+    }
+
+    @Test
+    @DisplayName("인증 코드가 일치하지 않는 경우 실패")
+    void verifyCodeFail_InvalidCode() {
+        // given
+        String email = "test@example.com";
+        String storedCode = "123456";
+        String wrongCode = "wrong-code";
+
+        VerifyDto.Request request = new VerifyDto.Request();
+        request.setEmail(email);
+        request.setVerifyCode(wrongCode);
+
+        when(redisUtil.getData(email)).thenReturn(storedCode);
+
+        // when
+        VerifyDto.Response response = emailService.verifyCode(request);
+
+        // then
+        assertThat(response.getResult()).isFalse();  // 코드가 일치하지 않으므로 실패
+        verify(redisUtil, never()).deleteData(email); // deleteData() 메소드 호출 안됐는지
     }
 }

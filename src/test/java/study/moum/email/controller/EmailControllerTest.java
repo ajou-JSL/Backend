@@ -12,8 +12,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import study.moum.email.controller.EmailController;
 import study.moum.email.dto.EmailDto;
+import study.moum.email.dto.VerifyDto;
 import study.moum.email.service.EmailService;
+import study.moum.global.error.ErrorCode;
+import study.moum.global.error.exception.CustomException;
 import study.moum.global.error.exception.NoAuthorityException;
+import study.moum.global.response.ResponseCode;
+import study.moum.redis.util.RedisUtil;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -26,6 +31,9 @@ class EmailControllerTest {
 
     @Mock
     private EmailService emailService;
+
+    @Mock
+    private RedisUtil redisUtil;
 
     @InjectMocks
     private EmailController emailController;
@@ -95,6 +103,54 @@ class EmailControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("인증 코드 검증 성공")
+    void verifyCodeSuccess() throws Exception {
+        // given
+        VerifyDto.Request request = new VerifyDto.Request();
+        request.setEmail("test@example.com");
+        request.setVerifyCode("123456");
+
+        VerifyDto.Response response = new VerifyDto.Response();
+        response.setResult(true);
+        response.setVerifyCode("123456");
+
+        when(emailService.verifyCode(any(VerifyDto.Request.class))).thenReturn(response);
+
+        // when, then
+        mockMvc.perform(post("/verify-code")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value(ResponseCode.EMAIL_VERIFY_SUCCESS.getMessage()))
+                .andDo(print());
+    }
+    @Test
+    @DisplayName("인증 코드가 일치하지 않는 경우 실패")
+    void verifyCodeFail() throws Exception {
+        // given
+        VerifyDto.Request request = new VerifyDto.Request();
+        request.setEmail("test@example.com");
+        request.setVerifyCode("wrong-code");
+
+        VerifyDto.Response response = new VerifyDto.Response();
+        response.setResult(false);  // 인증 실패를 표현
+        response.setVerifyCode("123456");
+
+        // 이메일 서비스가 인증에 실패한 응답을 반환하도록 설정
+        when(emailService.verifyCode(any(VerifyDto.Request.class))).thenReturn(response);
+
+        // when, then
+        mockMvc.perform(post("/verify-code")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.message").value(ErrorCode.EMAIL_VERIFY_FAILED.getMessage()))
                 .andDo(print());
     }
 }

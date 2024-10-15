@@ -13,6 +13,7 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(405, "C003", "method not allowed"),
     INVALID_TYPE_VALUE(400, "C004", "invalid type value"),
     BAD_CREDENTIALS(400, "C005", "bad credentials"),
+    ILLEGAL_ARGUMENT(400, "C006", "유효하지 않은 데이터입니다."),
 
     // Member
     MEMBER_NOT_EXIST(404, "M001", "존재하지 않은 회원입니다."),
@@ -27,7 +28,7 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALID(400, "A002", "유효하지 않은 refresh 토큰 입니다."),
     JWT_TOKEN_EXPIRED(401, "A003", "jwt 토큰이 만료되었습니다."),
 
-    EMAIL_VERIFY_FAILED(400,"E001","이메일 인증이 실패하였습니다."),
+    EMAIL_VERIFY_FAILED(422,"E001","이메일 인증이 실패하였습니다."),
     EMAIL_ALREADY_VERIFIED(409, "E001", "이미 인증 완료한 이메일입니다."),
 
     // Article

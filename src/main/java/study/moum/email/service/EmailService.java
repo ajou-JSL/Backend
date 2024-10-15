@@ -9,7 +9,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.email.dto.EmailDto;
+import study.moum.email.dto.VerifyDto;
+import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.AlreadyVerifiedEmailException;
+import study.moum.global.error.exception.CustomException;
 import study.moum.redis.util.RedisUtil;
 
 import java.util.UUID;
@@ -57,5 +60,30 @@ public class EmailService {
 
         redisUtil.setDataExpire(emailDto.getEmail(),code,60*1L); // {key,value} 1분동안 저장.
         return code;
+    }
+
+    public VerifyDto.Response verifyCode(VerifyDto.Request verifyDto) {
+        // Redis에서 해당 이메일에 매핑된 인증 코드 가져오기
+        String storedCode = redisUtil.getData(verifyDto.getEmail());
+
+        if (storedCode == null) {
+            throw new CustomException(ErrorCode.ILLEGAL_ARGUMENT);
+        }
+
+        // 사용자가 입력한 코드와 Redis에 저장된 코드 비교
+        boolean isValid = storedCode.equals(verifyDto.getVerifyCode());
+
+        VerifyDto.Response result = new VerifyDto.Response();
+        result.setVerifyCode(storedCode);
+
+        if (isValid) {
+            // 인증이 성공하면 해당 인증 코드를 삭제 (재사용 방지)
+            redisUtil.deleteData(verifyDto.getEmail());
+            result.setResult(true);
+        }else{
+            result.setResult(false);
+        }
+
+        return result;
     }
 }
