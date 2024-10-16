@@ -175,27 +175,6 @@ public class LikesServiceTest {
     }
 
     @Test
-    @DisplayName("좋아요 삭제 실패 - 없는 게시글")
-    void delete_likes_fail_no_article(){
-        // given
-        String memberName = member.getUsername(); // 좋아요 삭제를 시도하는 사용자
-        int articleId = 999; // 존재하지 않는 게시글 ID
-
-        // Mocking the behavior of repositories
-        given(likesRepository.findById(1)).willReturn(Optional.of(likes)); // 좋아요는 존재함
-        given(articleRepository.findById(articleId)).willReturn(Optional.empty()); // 게시글이 없음
-
-        // when & then
-        assertThrows(CustomException.class, () -> {
-            likesService.deleteLikes(likes.getId(),memberName, articleId); // 존재하지 않는 게시글에 대해 삭제 시도
-        });
-
-        // likesRepository.deleteById(1)가 호출되지 않았는지 확인
-        verify(likesRepository, never()).deleteById(1);
-
-    }
-
-    @Test
     @DisplayName("좋아요 삭제 실패 - 다른 사용자의 좋아요.권한 없음")
     void delete_likes_fail_different_user() {
         // given
@@ -217,7 +196,7 @@ public class LikesServiceTest {
 
         // when & then
         assertThrows(CustomException.class, () -> {
-            likesService.deleteLikes(anotherUserLikes.getId(),memberName, articleId); // 자신의 좋아요가 아님
+            likesService.deleteLikes(anotherUserLikes.getId(),memberName); // 자신의 좋아요가 아님
         });
 
         // likesRepository.deleteById(1)가 호출되지 않았는지 확인

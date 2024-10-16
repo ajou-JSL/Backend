@@ -60,7 +60,7 @@ public class ArticleEntity {
     public void viewCountUp(){
         this.viewCount += 1;
     }
-    public void likesCountUp() { this.likesCount += 1; }
+    public void updateLikesCount(int num) { this.likesCount += num; }
     public void commentsCountUp(){this.commentCount += 1;}
 
     public void updateArticle(String title, ArticleCategories category)

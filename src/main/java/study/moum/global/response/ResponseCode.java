@@ -35,7 +35,7 @@ public enum ResponseCode {
 
     // Likes
     LIKES_CREATE_SUCCESS(201,"L001","좋아요 등록 성공"),
-    DELETE_LIKES_SUCCESS(200,"L002","좋아요 삭제 성공");
+    LIKES_DELETE_SUCCESS(200,"L002","좋아요 삭제 성공");
 
 
     private final int status;

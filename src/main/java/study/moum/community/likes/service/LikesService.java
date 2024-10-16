@@ -40,22 +40,23 @@ public class LikesService {
         likesRepository.save(newLikes);
 
         // 좋아요 +1 후 저장
-        article.likesCountUp();
+        article.updateLikesCount(1);
         articleRepository.save(article);
 
         return new LikesDto.Response(newLikes);
     }
 
-    public LikesDto.Response deleteLikes(int likesId, String memberName, int articleId) {
+    public LikesDto.Response deleteLikes(int likesId, String memberName) {
 
         // 찾기
         LikesEntity likesEntity = likesRepository.findById(likesId)
                         .orElseThrow(()->new CustomException(ErrorCode.LIKES_NOT_FOUND));
-        findArticle(articleId);
+        ArticleEntity article = findArticle(likesEntity.getArticle().getId());
 
         // 유저이름이랑 좋아요누른사람이랑 같으면 삭제
         if(memberName.equals(likesEntity.getMember().getUsername())){
             likesRepository.deleteById(likesId);
+            article.updateLikesCount(-1);
         }
 
         return new LikesDto.Response(likesEntity);
