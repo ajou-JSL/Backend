@@ -16,12 +16,18 @@ import study.moum.community.article.domain.ArticleCategories;
 import study.moum.community.article.domain.ArticleEntity;
 import study.moum.community.likes.dto.LikesDto;
 import study.moum.community.likes.service.LikesService;
+import study.moum.custom.WithMockCustomMember;
 import study.moum.email.controller.EmailController;
 import study.moum.email.service.EmailService;
+import study.moum.global.error.ErrorCode;
+import study.moum.global.error.exception.CustomException;
 import study.moum.global.response.ResponseCode;
 import study.moum.redis.util.RedisUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -70,7 +76,6 @@ public class LikesControllerTest {
 
     @Test
     @DisplayName("게시글 좋아요 성공")
-    @WithMockUser("testuser")
     void article_likes_success() throws Exception{
         // given
         LikesDto.Request likesRequestDto = LikesDto.Request.builder()
@@ -82,6 +87,9 @@ public class LikesControllerTest {
 
         // when
         when(likesService.createLikes(member.getUsername(), article.getId())).thenReturn(likesResponseDto);
+        when(likesService.findMember(member.getUsername())).thenReturn(member);
+        when(likesService.findArticle(article.getId())).thenReturn(article);
+
 
         // then
         mockMvc.perform(post("/api/likes/1")
@@ -95,13 +103,25 @@ public class LikesControllerTest {
 
     @Test
     @DisplayName("게시글 좋아요 실패 - 이미 좋아요 누름")
-    void article_likes_fail_already_liked(){
+    void article_likes_fail_already_liked() throws Exception {
         // given
+        LikesDto.Request likesRequestDto = LikesDto.Request.builder()
+                .member(member)
+                .article(article)
+                .build();
+
+        // 이미 좋아요를 누른 상태를 모의합니다.
+        doThrow(new CustomException(ErrorCode.DUPLICATE_LIKES))
+                .when(likesService).createLikes(member.getUsername(), article.getId());
 
         // when
-
         // then
-
+        mockMvc.perform(post("/api/likes/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(likesRequestDto))
+                        .with(csrf())) // CSRF 토큰 추가
+                .andExpect(status().isConflict()) // 409 Conflict 상태 코드 확인
+                .andExpect(jsonPath("$.data.message").value("이미 좋아요를 누른 상태입니다."));
     }
 
     @Test

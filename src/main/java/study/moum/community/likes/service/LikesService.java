@@ -25,7 +25,7 @@ public class LikesService {
     public LikesDto.Response createLikes(String memberName, int articleId) {
 
         ArticleEntity article = findArticle(articleId);
-        MemberEntity member = findAMember(memberName);
+        MemberEntity member = findMember(memberName);
 
         LikesDto.Request likesRequest = LikesDto.Request.builder()
                 .member(member)
@@ -47,7 +47,7 @@ public class LikesService {
                 .orElseThrow(()-> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 
-    public MemberEntity findAMember(String memberName){
+    public MemberEntity findMember(String memberName){
         MemberEntity member = memberRepository.findByUsername(memberName);
         if(member == null){
             throw new CustomException(ErrorCode.MEMBER_NOT_EXIST);

@@ -115,7 +115,6 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("댓글 삭제 실패 - 권한 없음")
-    @WithMockUser(username = "testuser") // 로그인한 사용자 설정
     void deleteComment_Fail_NoAuthorization() {
         // Given
         when(memberRepository.findByUsername("testuser")).thenReturn(author);
