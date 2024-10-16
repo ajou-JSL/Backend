@@ -1,13 +1,12 @@
 package study.moum.community.likes.service;
 
 import lombok.RequiredArgsConstructor;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.community.article.domain.ArticleEntity;
 import study.moum.community.article.domain.ArticleRepository;
-import study.moum.community.comment.domain.CommentEntity;
-import study.moum.community.comment.dto.CommentDto;
 import study.moum.community.likes.domain.LikesEntity;
 import study.moum.community.likes.domain.LikesRepository;
 import study.moum.community.likes.dto.LikesDto;
@@ -32,6 +31,11 @@ public class LikesService {
                 .article(article)
                 .build();
 
+        // 유저이름이 게시글작성자랑 똑같으면 에러
+        if(memberName.equals(article.getAuthor().getUsername())){
+            throw new CustomException(ErrorCode.CANNOT_CREATE_SELF_LIKES);
+        }
+
         LikesEntity newLikes = likesRequest.toEntity();
         likesRepository.save(newLikes);
 
@@ -42,19 +46,32 @@ public class LikesService {
         return new LikesDto.Response(newLikes);
     }
 
+    public LikesDto.Response deleteLikes(int likesId, String memberName, int articleId) {
+
+        // 찾기
+        LikesEntity likesEntity = likesRepository.findById(likesId)
+                        .orElseThrow(()->new CustomException(ErrorCode.LIKES_NOT_FOUND));
+        findArticle(articleId);
+
+        // 유저이름이랑 좋아요누른사람이랑 같으면 삭제
+        if(memberName.equals(likesEntity.getMember().getUsername())){
+            likesRepository.deleteById(likesId);
+        }
+
+        return new LikesDto.Response(likesEntity);
+    }
+
     public ArticleEntity findArticle(int articleId){
         return articleRepository.findById(articleId)
                 .orElseThrow(()-> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 
     public MemberEntity findMember(String memberName){
-        MemberEntity member = memberRepository.findByUsername(memberName);
-        if(member == null){
+
+        if(memberRepository.findByUsername(memberName) == null){
             throw new CustomException(ErrorCode.MEMBER_NOT_EXIST);
         }
-        return member;
+        return memberRepository.findByUsername(memberName);
     }
-
-
 
 }

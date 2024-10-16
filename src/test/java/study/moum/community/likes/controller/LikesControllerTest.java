@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.community.article.domain.ArticleCategories;
 import study.moum.community.article.domain.ArticleEntity;
+import study.moum.community.likes.domain.LikesEntity;
 import study.moum.community.likes.dto.LikesDto;
 import study.moum.community.likes.service.LikesService;
 import study.moum.custom.WithMockCustomMember;
@@ -75,19 +76,34 @@ public class LikesControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 좋아요 성공")
+    @DisplayName("게시글 좋아요 생성 성공")
+    @WithMockCustomMember
     void article_likes_success() throws Exception{
         // given
+        MemberEntity anothor_member = MemberEntity.builder()
+                .id(333)
+                .role("ROLE_USER")
+                .username("anothor_user")
+                .password("1234")
+                .email("another@user.com")
+                .build();
+
+        LikesEntity likesEntity = LikesEntity.builder()
+                .id(999)
+                .article(article)
+                .member(anothor_member)
+                .build();
+
         LikesDto.Request likesRequestDto = LikesDto.Request.builder()
-                .member(member)
+                .member(anothor_member)
                 .article(article)
                 .build();
 
-        LikesDto.Response likesResponseDto = new LikesDto.Response(1,1,1);
+        LikesDto.Response likesResponseDto = new LikesDto.Response(999,333,1);
 
         // when
-        when(likesService.createLikes(member.getUsername(), article.getId())).thenReturn(likesResponseDto);
-        when(likesService.findMember(member.getUsername())).thenReturn(member);
+        when(likesService.createLikes(anothor_member.getUsername(), article.getId())).thenReturn(likesResponseDto);
+        when(likesService.findMember(anothor_member.getUsername())).thenReturn(anothor_member);
         when(likesService.findArticle(article.getId())).thenReturn(article);
 
 
@@ -149,17 +165,6 @@ public class LikesControllerTest {
     @Test
     @DisplayName("게시글 좋아요 삭제 실패 - 권한 없음")
     void delete_likes_fail_NoAuthority(){
-        // given
-
-        // when
-
-        // then
-
-    }
-
-    @Test
-    @DisplayName("게시글 좋아요 목록 조회")
-    void get_likes_article_list(){
         // given
 
         // when

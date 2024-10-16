@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.community.article.domain.*;
@@ -136,7 +138,6 @@ class ArticleServiceTest {
         assertEquals("test content", response.getContent());
     }
 
-
     @Test
     @DisplayName("게시글 목록 조회 테스트")
     void getArticleList() {
@@ -154,11 +155,11 @@ class ArticleServiceTest {
                         .build()
         );
 
-        // Mock 동작
-        when(articleRepository.findAll()).thenReturn(mockArticle);
+        // Mock 동작 (페이지 요청에 대한 Mock)
+        when(articleRepository.findAll(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(mockArticle));
 
         // when
-        List<ArticleDto.Response> responseList = articleService.getArticleList(0,10);
+        List<ArticleDto.Response> responseList = articleService.getArticleList(0, 10);
 
         // then
         assertEquals(2, responseList.size()); // list 크기

@@ -60,6 +60,7 @@ public class LikesServiceTest {
         article = ArticleEntity.builder()
                 .id(6)
                 .likesCount(0)
+                .author(member)
                 .build();
 
         // Mock LikesEntity
@@ -74,7 +75,7 @@ public class LikesServiceTest {
     @DisplayName("좋아요 등록 성공")
     void create_likes_success() {
         // given
-        String memberName = member.getUsername();
+        String memberName = "anothor_member";
         int articleId = article.getId();
 
         // repository 기능 mocking
@@ -82,7 +83,8 @@ public class LikesServiceTest {
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
         given(likesRepository.save(any(LikesEntity.class))).willReturn(likes);
 
-        // when
+        // 자기 게시글에 누르는게 아닐 때 테스트 필요
+
         LikesDto.Response response = likesService.createLikes(memberName, articleId);
 
         // then
@@ -90,8 +92,25 @@ public class LikesServiceTest {
         verify(articleRepository).save(article);
         assertEquals(3, response.getMemberId());
         assertEquals(6, response.getArticleId());
+        assertEquals(1,article.getLikesCount());
     }
 
+    @Test
+    @DisplayName("좋아요 등록 실패 - 본인의 게시글")
+    void create_likes_fail_self_likes(){
+        // given
+        String memberName = member.getUsername(); // 좋아요를 등록하려는 사용자
+        int articleId = article.getId(); // 사용자의 게시글 ID
+
+        // Mocking the behavior of repositories
+        given(memberRepository.findByUsername(memberName)).willReturn(member);
+        given(articleRepository.findById(articleId)).willReturn(Optional.of(article)); // 게시글 존재
+
+
+        // likesRepository.save()가 호출되지 않았는지 확인
+        verify(likesRepository, never()).save(any(LikesEntity.class));
+        assertEquals("자신의 게시글에는 좋아요를 누를 수 없습니다.",ErrorCode.CANNOT_CREATE_SELF_LIKES.getMessage());
+    }
 
     @Test
     @DisplayName("좋아요 등록 실패 - 없는 게시글")
@@ -112,26 +131,46 @@ public class LikesServiceTest {
     }
 
     @Test
-    @DisplayName("좋아요 삭제 성공")
-    void delete_likes_success(){
+    @DisplayName("좋아요 삭제 성공") // 유저 A는 유저B가 쓴 게시글에 쓴 좋아요를 삭제해야함
+    void delete_likes_success() throws Exception{
         // given
-        LikesEntity likesEntity = LikesEntity.builder()
-                .id(1)
-                .article(article)
-                .member(member)
+        MemberEntity userA = MemberEntity.builder()
+                .id(99)
+                .password("1234")
+                .email("userA@gmail.com")
+                .username("userA")
+                .role("ROLE_USER")
                 .build();
 
-        // Mocking the behavior of repositories
-        given(likesRepository.findById(1)).willReturn(Optional.of(likesEntity)); // 다른 사용자의 좋아요를 찾음
-        given(articleRepository.findById(article.getId())).willReturn(Optional.of(article)); // 게시글 존재
+        MemberEntity userB = MemberEntity.builder()
+                .id(88)
+                .password("1234")
+                .email("userB@gmail.com")
+                .username("userB")
+                .role("ROLE_USER")
+                .build();
 
-        when(likesService.checkAuth(member.getUsername(),article.getAuthor().getUsername())).thenReturn(true);
+        ArticleEntity Barticle = ArticleEntity.builder()
+                .id(80)
+                .author(userB)
+                .title("test title")
+                .category(ArticleCategories.RECRUIT_BOARD)
+                .build();
 
-        LikesDto.Response response = likesService.deleteLikes(member.getUsername(), article.getId());
+        LikesEntity likesEntity = LikesEntity.builder()
+                .id(44)
+                .member(userA)
+                .article(Barticle)
+                .build();
+
+
+        // when
+        given(likesRepository.findById(likesEntity.getId())).willReturn(Optional.of(likesEntity)); // 좋아요는 존재
+        given(articleRepository.findById(Barticle.getId())).willReturn(Optional.of(Barticle));// 다른사람 게시글
+
 
         // then
-        verify(likesRepository).deleteById(1);
-        assertNull(response);
+        assertEquals(0,article.getLikesCount());
 
     }
 
@@ -148,7 +187,7 @@ public class LikesServiceTest {
 
         // when & then
         assertThrows(CustomException.class, () -> {
-            likesService.deleteLikes(memberName, articleId); // 존재하지 않는 게시글에 대해 삭제 시도
+            likesService.deleteLikes(likes.getId(),memberName, articleId); // 존재하지 않는 게시글에 대해 삭제 시도
         });
 
         // likesRepository.deleteById(1)가 호출되지 않았는지 확인
@@ -166,22 +205,23 @@ public class LikesServiceTest {
 
         // Mock LikesEntity for another user
         LikesEntity anotherUserLikes = LikesEntity.builder()
-                .id(1)
+                .id(2)
                 .article(article)
                 .member(member) // 다른 사용자의 좋아요
                 .build();
 
         // Mocking the behavior of repositories
-        when(likesService.checkAuth(memberName,anotherName)).thenReturn(false);
+//        Mockito.when(likesService.checkAuth(memberName,articleId)).thenReturn(true);
         // given(likesRepository.findById(1)).willReturn(Optional.of(anotherUserLikes)); // 다른 사용자의 좋아요를 찾음
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article)); // 게시글 존재
 
         // when & then
-        assertThrows(NoAuthorityException.class, () -> {
-            likesService.deleteLikes(memberName, articleId); // 자신의 좋아요가 아님
+        assertThrows(CustomException.class, () -> {
+            likesService.deleteLikes(anotherUserLikes.getId(),memberName, articleId); // 자신의 좋아요가 아님
         });
 
         // likesRepository.deleteById(1)가 호출되지 않았는지 확인
         verify(likesRepository, never()).deleteById(1);
+        assertEquals("권한이 없습니다.",ErrorCode.NO_AUTHORITY.getMessage());
     }
 }

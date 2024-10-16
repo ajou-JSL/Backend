@@ -40,7 +40,9 @@ public enum ErrorCode {
     COMMENT_ALREADY_DELETED(404,"CM002","이미 삭제된 댓글입니다."),
 
     // Likes
-    DUPLICATE_LIKES(409, "L001","이미 좋아요 누른 게시글입니다.");
+    DUPLICATE_LIKES(409, "L001","이미 좋아요 누른 게시글입니다."),
+    LIKES_NOT_FOUND(404, "L002","찾을 수 없는 좋아요입니다."),
+    CANNOT_CREATE_SELF_LIKES(409, "L003","자신의 게시글에는 좋아요를 누를 수 없습니다.");
 
 
     private final int status;
