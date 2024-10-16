@@ -28,11 +28,13 @@ public class ArticleRepositoryCustom {
      *
      * @return 자유게시판 게시글 리스트
      */
-    public List<ArticleEntity> findFreeTalkingArticles() {
+    public List<ArticleEntity> findFreeTalkingArticles(int page, int size) {
         return jpaQueryFactory
                 .selectFrom(articleEntity)
                 .where(articleEntity.category.eq(ArticleCategories.FREE_TALKING_BOARD))
                 .orderBy(articleEntity.createdAt.desc())
+                .offset(page * size) // 페이지에 따른 오프셋 계산
+                .limit(size)
                 .fetch();
     }
 
@@ -47,10 +49,12 @@ public class ArticleRepositoryCustom {
 
      * @return 모집게시판 게시글 리스트
      */
-    public List<ArticleEntity> findRecruitingdArticles() {
+    public List<ArticleEntity> findRecruitingdArticles(int page, int size) {
         return jpaQueryFactory
                 .selectFrom(articleEntity)
                 .where(articleEntity.category.eq(ArticleCategories.RECRUIT_BOARD))
+                .offset(page * size) // 페이지에 따른 오프셋 계산
+                .limit(size)
                 .orderBy(articleEntity.createdAt.desc())
                 .fetch();
     }
@@ -65,13 +69,15 @@ public class ArticleRepositoryCustom {
      *  where lower(a.title) like lower('%:keyword%') and category = :category;
      *
      */
-    public List<ArticleEntity> searchArticlesByTitleKeyword(String keyword, String category) {
+    public List<ArticleEntity> searchArticlesByTitleKeyword(String keyword, String category,int page, int size) {
         return jpaQueryFactory
                 .selectFrom(articleEntity)
                 .where(
                         articleEntity.title.containsIgnoreCase(keyword),
                         isCategory(category)
                 )
+                .offset(page * size) // 페이지에 따른 오프셋 계산
+                .limit(size)
                 .fetch();
     }
 

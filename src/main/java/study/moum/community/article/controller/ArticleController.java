@@ -32,8 +32,9 @@ public class ArticleController {
      * 모든 게시글 목록을 조회한 후, 성공 응답과 함께 반환
      */
     @GetMapping("/api/articles")
-    public ResponseEntity<ResultResponse> getArticleList() {
-        List<ArticleDto.Response> articleList = articleService.getArticleList();
+    public ResponseEntity<ResultResponse> getArticleList(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size) {
+        List<ArticleDto.Response> articleList = articleService.getArticleList(page,size);
 
         ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
@@ -96,10 +97,12 @@ public class ArticleController {
      */
     @GetMapping("/api/articles/search")
     public ResponseEntity<ResultResponse> searchArticles(@RequestParam(required = false) String keyword,
-                                                         @RequestParam(required = false) String category
+                                                         @RequestParam(required = false) String category,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size
     ) {
 
-        List<ArticleDto.Response> articleList = articleService.getArticleWithTitleSearch(keyword,category);
+        List<ArticleDto.Response> articleList = articleService.getArticleWithTitleSearch(keyword,category,page,size);
 
         ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
@@ -113,9 +116,11 @@ public class ArticleController {
      */
     @GetMapping("/api/articles/category")
     public ResponseEntity<ResultResponse> getArticles(
-            @RequestParam(required = true) ArticleCategories category) {
+            @RequestParam(required = true) ArticleCategories category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        List<ArticleDto.Response> articleList = articleService.getArticlesByCategory(category);
+        List<ArticleDto.Response> articleList = articleService.getArticlesByCategory(category,page,size);
 
         ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));

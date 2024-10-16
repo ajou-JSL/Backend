@@ -1,6 +1,7 @@
 package study.moum.community.article.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.moum.auth.domain.entity.MemberEntity;
@@ -95,9 +96,9 @@ public class ArticleService {
      * 데이터베이스에서 모든 게시글을 조회한 후, 각 게시글을 응답 DTO로 변환하여 리스트로 반환
      */
     @Transactional(readOnly = true)
-    public List<ArticleDto.Response> getArticleList() {
+    public List<ArticleDto.Response> getArticleList(int page, int size) {
         // 데이터베이스에서 모든 게시글 조회
-        List<ArticleEntity> articles = articleRepository.findAll();
+        List<ArticleEntity> articles = articleRepository.findAll(PageRequest.of(page, size)).getContent();
 
         // 조회된 게시글들을 DTO로 변환
         List<ArticleDto.Response> articleResponseList = articles.stream()
@@ -178,13 +179,13 @@ public class ArticleService {
      * @return 카테고리에 해당하는 게시글 리스트
      */
     @Transactional(readOnly = true)
-    public List<ArticleDto.Response> getArticlesByCategory(ArticleCategories category) {
+    public List<ArticleDto.Response> getArticlesByCategory(ArticleCategories category, int page, int size) {
         List<ArticleEntity> articles;
 
         if (category == ArticleCategories.FREE_TALKING_BOARD) {
-            articles = articleRepositoryCustom.findFreeTalkingArticles();
+            articles = articleRepositoryCustom.findFreeTalkingArticles(page, size);
         } else if (category == ArticleCategories.RECRUIT_BOARD) {
-            articles = articleRepositoryCustom.findRecruitingdArticles();
+            articles = articleRepositoryCustom.findRecruitingdArticles(page, size);
         } else {
             throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
         }
@@ -202,8 +203,8 @@ public class ArticleService {
      * @return 검색된 게시글 리스트
      */
     @Transactional(readOnly = true)
-    public List<ArticleDto.Response> getArticleWithTitleSearch(String keyword, String category) {
-        List<ArticleEntity> articles = articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, category);
+    public List<ArticleDto.Response> getArticleWithTitleSearch(String keyword, String category,int page, int size) {
+        List<ArticleEntity> articles = articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, category, page, size);
 
         // 조회된 게시글들을 DTO로 변환
         List<ArticleDto.Response> articleResponseList = articles.stream()
