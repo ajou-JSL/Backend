@@ -31,7 +31,11 @@ public enum ResponseCode {
     // Commenet
     COMMENT_CREATE_SUCCESS(201,"C001","댓글 작성 성공"),
     COMMENT_UPDATE_SUCCESS(201,"C002","댓글 수정 성공"),
-    COMMENT_DELETE_SUCCESS(200,"C003","댓글 삭제 성공");
+    COMMENT_DELETE_SUCCESS(200,"C003","댓글 삭제 성공"),
+
+    // Likes
+    LIKES_CREATE_SUCCESS(201,"L001","좋아요 등록 성공"),
+    DELETE_LIKES_SUCCESS(200,"L002","좋아요 삭제 성공");
 
 
     private final int status;

@@ -158,7 +158,7 @@ class ArticleServiceTest {
         when(articleRepository.findAll()).thenReturn(mockArticle);
 
         // when
-        List<ArticleDto.Response> responseList = articleService.getArticleList();
+        List<ArticleDto.Response> responseList = articleService.getArticleList(0,10);
 
         // then
         assertEquals(2, responseList.size()); // list 크기
@@ -281,12 +281,12 @@ class ArticleServiceTest {
         );
 
         // Mock 동작
-        when(articleRepositoryCustom.findFreeTalkingArticles()).thenReturn(mockArticle); // 자유게시판
-        when(articleRepositoryCustom.findRecruitingdArticles()).thenReturn(mockArticle); // 모집게시판
+        when(articleRepositoryCustom.findFreeTalkingArticles(0,10)).thenReturn(mockArticle); // 자유게시판
+        when(articleRepositoryCustom.findRecruitingdArticles(0,10)).thenReturn(mockArticle); // 모집게시판
 
         // when
-        List<ArticleDto.Response> Freearticles = articleService.getArticlesByCategory(ArticleCategories.FREE_TALKING_BOARD);
-        List<ArticleDto.Response> Recruitarticles = articleService.getArticlesByCategory(ArticleCategories.RECRUIT_BOARD);
+        List<ArticleDto.Response> Freearticles = articleService.getArticlesByCategory(ArticleCategories.FREE_TALKING_BOARD,0,10);
+        List<ArticleDto.Response> Recruitarticles = articleService.getArticlesByCategory(ArticleCategories.RECRUIT_BOARD,0,10);
 
         // then
         assertEquals(4, mockArticle.size());
@@ -340,11 +340,11 @@ class ArticleServiceTest {
                         article.getCategory() == ArticleCategories.FREE_TALKING_BOARD)
                 .collect(Collectors.toList());
 
-        when(articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, "FREE_TALKING_BOARD"))
+        when(articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, "FREE_TALKING_BOARD",0,10))
                 .thenReturn(articleList);
 
         // when
-        List<ArticleDto.Response> response = articleService.getArticleWithTitleSearch(keyword, "FREE_TALKING_BOARD");
+        List<ArticleDto.Response> response = articleService.getArticleWithTitleSearch(keyword, "FREE_TALKING_BOARD",0,10);
 
         // then
         assertEquals(2, response.size());

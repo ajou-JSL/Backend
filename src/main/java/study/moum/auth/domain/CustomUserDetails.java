@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import study.moum.auth.domain.entity.MemberEntity;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -29,6 +30,8 @@ public class CustomUserDetails implements UserDetails {
 
         return collection;
     }
+
+    public int getMemberId(){return memberEntity.getId();}
 
     @Override
     public String getPassword() {

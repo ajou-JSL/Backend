@@ -54,7 +54,7 @@ class ArticleControllerTest {
         );
 
         // when
-        when(articleService.getArticleList()).thenReturn(mockResponse);
+        when(articleService.getArticleList(0,10)).thenReturn(mockResponse);
 
         // then
         mockMvc.perform(get("/api/articles"))
@@ -77,7 +77,7 @@ class ArticleControllerTest {
         );
 
         // when: 서비스의 메서드 호출 시 mockResponse를 반환하도록 설정
-        when(articleService.getArticlesByCategory(category)).thenReturn(mockResponse);
+        when(articleService.getArticlesByCategory(category,0,10)).thenReturn(mockResponse);
 
         // then: 카테고리별 게시글 목록 조회
         // mockMvc.perform(get("/api/articles/category")
@@ -128,7 +128,7 @@ class ArticleControllerTest {
         String category = "FREE_TALKING_BOARD";
         List<ArticleDto.Response> mockResponse = List.of(new ArticleDto.Response(1, "Title", ArticleCategories.FREE_TALKING_BOARD, 10, 5, 3, "author"));
 
-        when(articleService.getArticleWithTitleSearch(keyword, category)).thenReturn(mockResponse);
+        when(articleService.getArticleWithTitleSearch(keyword, category,0,10)).thenReturn(mockResponse);
 
         mockMvc.perform(get("/api/articles/search?keyword=" + keyword + "&category=" + category))
                 .andExpect(status().isOk())
