@@ -14,6 +14,7 @@ import study.moum.community.comment.domain.CommentRepository;
 import study.moum.community.comment.dto.CommentDto;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
+import study.moum.global.error.exception.MemberNotExistException;
 import study.moum.global.error.exception.NeedLoginException;
 import study.moum.global.error.exception.NoAuthorityException;
 
@@ -46,7 +47,10 @@ public class CommentService {
     @Transactional
     public CommentDto.Response createComment(CommentDto.Request commentRequestDto, String username, int articleId){
 
-        MemberEntity author = findUser(username);
+        MemberEntity author = memberRepository.findByUsername(username);
+        if(author == null){
+            throw new MemberNotExistException();
+        }
         ArticleEntity article = getArticle(articleId);
         ArticleDetailsEntity articleDetails = getArticleDetails(articleId);
 
@@ -130,15 +134,6 @@ public class CommentService {
 
         commentRepository.deleteById(commentId);
         return new CommentDto.Response(comment);
-    }
-
-
-    private MemberEntity findUser(String username){
-        MemberEntity author = memberRepository.findByUsername(username);
-        if(author == null){
-            throw new NeedLoginException();
-        }
-        return author;
     }
 
     private ArticleDetailsEntity getArticleDetails(int articleDetailsId) {
