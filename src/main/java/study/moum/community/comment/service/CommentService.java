@@ -89,7 +89,6 @@ public class CommentService {
     @Transactional
     public CommentDto.Response updateComment(CommentDto.Request commentRequestDto, String username, int commentId){
 
-        findUser(username);
         CommentEntity comment = commentRepository.findById(commentId)
                 .orElseThrow(()->new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
@@ -122,7 +121,6 @@ public class CommentService {
      */
     @Transactional
     public CommentDto.Response deleteComment(String username, int commentId){
-        findUser(username);
 
         CommentEntity comment = commentRepository.findById(commentId)
                 .orElseThrow(()->new CustomException(ErrorCode.COMMENT_ALREADY_DELETED));
