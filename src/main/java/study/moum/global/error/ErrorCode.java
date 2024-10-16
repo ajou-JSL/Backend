@@ -37,7 +37,11 @@ public enum ErrorCode {
 
     // Comment
     COMMENT_NOT_FOUND(404,"CM001","댓글을 찾을 수 없습니다."),
-    COMMENT_ALREADY_DELETED(404,"CM002","이미 삭제된 댓글입니다.");
+    COMMENT_ALREADY_DELETED(404,"CM002","이미 삭제된 댓글입니다."),
+
+    // Likes
+    DUPLICATE_LIKES(409, "L001","이미 좋아요 누른 게시글입니다.");
+
 
     private final int status;
     private final String code;

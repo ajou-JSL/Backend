@@ -2,6 +2,7 @@ package study.moum.global.error;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,6 +24,12 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleBadCredentialException(BadCredentialsException e) {
         final ErrorResponse response = ErrorResponse.of(BAD_CREDENTIALS);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        final ErrorResponse response = ErrorResponse.of(DUPLICATE_LIKES);
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
