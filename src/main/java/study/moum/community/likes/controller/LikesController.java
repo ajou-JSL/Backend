@@ -41,19 +41,19 @@ public class LikesController {
      * 좋아요 삭제 API
      *
      * @param customUserDetails 현재 인증된 사용자 정보 (CustomUserDetails 객체에서 사용자 정보 추출)
-     * @param likesId 좋아요 ID
+     * @param articleId 게시글 ID
      * @return 삭제한 좋아요 객체
      */
-    @DeleteMapping("/api/likes/{likesId}")
+    @DeleteMapping("/api/likes/{articleId}")
     public ResponseEntity<ResultResponse> deleteLikes(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                      @PathVariable int likesId){
+                                                      @PathVariable int articleId){
         if(customUserDetails == null){
             throw new NeedLoginException();
         }
 
-        LikesDto.Response likesResponse = likesService.deleteLikes(likesId,customUserDetails.getUsername());
+        LikesDto.Response likesResponse = likesService.deleteLikes(articleId,customUserDetails.getUsername());
 
-        ResultResponse response = ResultResponse.of(ResponseCode.LIKES_CREATE_SUCCESS, likesResponse);
+        ResultResponse response = ResultResponse.of(ResponseCode.LIKES_DELETE_SUCCESS, likesResponse);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 }

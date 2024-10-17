@@ -2,6 +2,7 @@ package study.moum.community.likes.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.community.article.domain.article.ArticleEntity;
@@ -20,6 +21,7 @@ public class LikesService {
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
 
+    @Transactional
     public LikesDto.Response createLikes(String memberName, int articleId) {
 
         ArticleEntity article = findArticle(articleId);
@@ -45,20 +47,27 @@ public class LikesService {
         return new LikesDto.Response(newLikes);
     }
 
-    public LikesDto.Response deleteLikes(int likesId, String memberName) {
+    @Transactional
+    public LikesDto.Response deleteLikes(int articleId, String memberName) {
 
-        // 찾기
         MemberEntity member = findMember(memberName);
-        LikesEntity likesEntity = likesRepository.findById(likesId)
-                        .orElseThrow(()->new CustomException(ErrorCode.LIKES_NOT_FOUND));
-        ArticleEntity article = findArticle(likesEntity.getArticle().getId());
 
-        // 유저이름이랑 좋아요누른사람이랑 같으면 삭제
-        if(memberName.equals(likesEntity.getMember().getUsername())){
-            likesRepository.deleteById(likesId);
-            article.updateLikesCount(-1);
+        // 해당 게시글에 대해 이 멤버가 누른 좋아요 찾기
+        LikesEntity likesEntity = likesRepository.findByArticleIdAndMemberId(articleId, member.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.LIKES_NOT_FOUND));
 
+        // 유저 이름이랑 좋아요를 누른 사람의 이름이 다르면 에러
+        if (!memberName.equals(likesEntity.getMember().getUsername())) {
+            throw new CustomException(ErrorCode.CANNOT_DELETE_OTHERS_LIKES);
         }
+
+        // 좋아요 삭제
+        likesRepository.deleteLikeByArticleIdAndMemberId(articleId, member.getId());
+
+        // 게시글 좋아요 수 감소 및 저장
+        ArticleEntity article = findArticle(articleId);
+        article.updateLikesCount(-1);
+        articleRepository.save(article);
 
         return new LikesDto.Response(likesEntity);
     }
