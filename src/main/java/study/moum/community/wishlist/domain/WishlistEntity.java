@@ -1,4 +1,4 @@
-package study.moum.community.likes.domain;
+package study.moum.community.wishlist.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,17 +11,17 @@ import study.moum.community.article.domain.ArticleEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Getter
-@Table(name = "likes",
+@Entity
+@Table(name = "wishlist",
         uniqueConstraints = {
-            @UniqueConstraint(
-                    name="likes_unique_key",
-                    columnNames = {"member_id","article_id"}
-            )
+                @UniqueConstraint(
+                        name="likes_unique_key",
+                        columnNames = {"member_id", "article_id"}
+                )
         }
 )
-public class LikesEntity {
+public class WishlistEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

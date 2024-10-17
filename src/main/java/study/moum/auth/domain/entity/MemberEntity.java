@@ -3,6 +3,10 @@ package study.moum.auth.domain.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import study.moum.community.wishlist.domain.WishlistEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -17,15 +21,19 @@ public class MemberEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotEmpty @NotNull @Size(min=3, max=10)
+    @NotEmpty
+    @NotNull
+    @Size(min = 3, max = 10)
     @Column(name = "user_name", nullable = false)
     private String username;
 
-    @NotEmpty @NotNull
+    @NotEmpty
+    @NotNull
     @Column(name = "password", nullable = false)
     private String password;
 
-    @NotEmpty @NotNull
+    @NotEmpty
+    @NotNull
     @Pattern(regexp = "^[\\w!#$%&'*+/=?`{|}~^.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식이 올바르지 않습니다.")
     @Column(name = "email", nullable = false)
     private String email;
@@ -35,4 +43,6 @@ public class MemberEntity {
     @Column(name = "role", nullable = false)
     private String role;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<WishlistEntity> wishlists = new ArrayList<>();
 }

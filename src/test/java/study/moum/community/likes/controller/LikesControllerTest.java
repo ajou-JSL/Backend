@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import study.moum.auth.domain.entity.MemberEntity;
@@ -17,13 +16,9 @@ import study.moum.community.article.domain.ArticleEntity;
 import study.moum.community.likes.domain.LikesEntity;
 import study.moum.community.likes.dto.LikesDto;
 import study.moum.community.likes.service.LikesService;
-import study.moum.custom.WithMockCustomMember;
-import study.moum.email.controller.EmailController;
-import study.moum.email.service.EmailService;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
 import study.moum.global.response.ResponseCode;
-import study.moum.redis.util.RedisUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -77,7 +72,6 @@ public class LikesControllerTest {
 
     @Test
     @DisplayName("게시글 좋아요 생성 성공")
-    @WithMockCustomMember
     void article_likes_success() throws Exception{
         // given
         MemberEntity anothor_member = MemberEntity.builder()

@@ -4,50 +4,39 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import study.moum.auth.domain.CustomUserDetails;
 import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.auth.domain.repository.MemberRepository;
 import study.moum.community.article.domain.ArticleCategories;
 import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.community.article.service.ArticleService;
-import study.moum.custom.WithMockCustomMember;
+import study.moum.custom.WithAuthUser;
+
+import study.moum.global.response.ResponseCode;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
-@WebMvcTest(ArticleController.class)  // 특정 컨트롤러만 로드
+@WebMvcTest(ArticleController.class)
 class ArticleControllerTest {
 
     @MockBean
-    private ArticleService articleService;  // Service 의존성 Mock 설정
+    private ArticleService articleService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -60,13 +49,16 @@ class ArticleControllerTest {
 
     @BeforeEach
     void setUp() {
-        // UTF-8 인코딩 필터 추가
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .addFilter(new CharacterEncodingFilter("utf-8", true))
+                .apply(springSecurity())
+                .alwaysDo(print())
                 .build();
     }
+
     @Test
     @DisplayName("게시글 목록 조회 테스트")
+    @WithAuthUser
     void getArticleList() throws Exception {
         // given : 게시글 리스트 생성
         List<ArticleDto.Response> mockResponse = List.of(
@@ -88,6 +80,7 @@ class ArticleControllerTest {
 
     @Test
     @DisplayName("카테고리별 게시글 목록 조회 테스트")
+    @WithAuthUser
     void getArticlesByCategoryTest() throws Exception {
         ArticleCategories category = ArticleCategories.FREE_TALKING_BOARD;
 
@@ -115,6 +108,7 @@ class ArticleControllerTest {
 
     @Test
     @DisplayName("게시글 상세 조회 테스트")
+    @WithAuthUser
     void getArticleByIdTest() throws Exception {
         // given : Author 생성
         MemberEntity author = MemberEntity.builder()
@@ -145,6 +139,7 @@ class ArticleControllerTest {
 
     @Test
     @DisplayName("게시글 검색 테스트")
+    @WithAuthUser
     void searchArticlesTest() throws Exception {
         String keyword = "searchKeyword";
         String category = "FREE_TALKING_BOARD";
@@ -157,44 +152,45 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.data[0].title").value("Title"));
     }
 
-
     @Test
-    @DisplayName("게시글 생성 테스트")
-    void postArticleTest() throws Exception {
-
-         //given : Author 생성
+    @DisplayName("게시글 작성 성공 테스트")
+    @WithAuthUser(email = "test@user.com", username = "testuser")
+    void postArticle_Success() throws Exception {
+        //given : Author 생성
         MemberEntity author = MemberEntity.builder()
                 .id(1)
                 .email("test@gmail.com")
-                .username("testAuthor")
+                .username("testuser")
                 .password("12345123")
                 .role("ROLE_ADMIN")
                 .build();
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(author);
 
         // given : Article 생성
-        ArticleDto.Request request = ArticleDto.Request.builder()
+        ArticleDto.Request articleRequest = ArticleDto.Request.builder()
                 .id(1)
                 .category(ArticleCategories.FREE_TALKING_BOARD)
                 .title("test title")
-                //.author(author)
+                .author(author)
                 .build();
 
-        ArticleDto.Response response = new ArticleDto.Response(1, "test title", ArticleCategories.FREE_TALKING_BOARD, 0, 0, 0, any());
+        ArticleDto.Response response = new ArticleDto.Response(1, "test title", ArticleCategories.FREE_TALKING_BOARD, 0, 0, 0,"testuser");
 
-        // when(articleService.postArticle(any(), Mockito.anyString())).thenReturn(response);
-        when(articleService.postArticle(request, eq(customUserDetails.getUsername()))).thenReturn(response);
+        // when
+        Mockito.when(articleService.postArticle(Mockito.any(), Mockito.eq("testuser")))
+                .thenReturn(response);
 
-        // Then
-        mockMvc.perform(post("/api/articles")
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/articles")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .with(SecurityMockMvcRequestPostProcessors.user(customUserDetails.getUsername())))
+                        .content(objectMapper.writeValueAsString(articleRequest))
+                        .with(csrf()))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.title").value("test title"));
-
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.message").value(ResponseCode.ARTICLE_POST_SUCCESS.getMessage()))
+                .andExpect(jsonPath("$.data.title").value(articleRequest.getTitle()))
+                .andExpect(jsonPath("$.data.author").value(articleRequest.getAuthor().getUsername()));
     }
+
 }
 

@@ -10,6 +10,7 @@ import study.moum.community.article.domain.ArticleRepository;
 import study.moum.community.likes.domain.LikesEntity;
 import study.moum.community.likes.domain.LikesRepository;
 import study.moum.community.likes.dto.LikesDto;
+import study.moum.community.wishlist.domain.WishlistRepository;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
 
@@ -20,6 +21,7 @@ public class LikesService {
     private final LikesRepository likesRepository;
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
+    private final WishlistRepository wishlistRepository;
 
     public LikesDto.Response createLikes(String memberName, int articleId) {
 
@@ -43,12 +45,16 @@ public class LikesService {
         article.updateLikesCount(1);
         articleRepository.save(article);
 
+        // 위시리스트 추가
+        wishlistRepository.addToWishlist(member.getId(), article.getId());
+
         return new LikesDto.Response(newLikes);
     }
 
     public LikesDto.Response deleteLikes(int likesId, String memberName) {
 
         // 찾기
+        MemberEntity member = findMember(memberName);
         LikesEntity likesEntity = likesRepository.findById(likesId)
                         .orElseThrow(()->new CustomException(ErrorCode.LIKES_NOT_FOUND));
         ArticleEntity article = findArticle(likesEntity.getArticle().getId());
@@ -57,6 +63,7 @@ public class LikesService {
         if(memberName.equals(likesEntity.getMember().getUsername())){
             likesRepository.deleteById(likesId);
             article.updateLikesCount(-1);
+            wishlistRepository.removeFromWishlist(member.getId(),article.getId()); // 위시리스트 삭제
         }
 
         return new LikesDto.Response(likesEntity);
