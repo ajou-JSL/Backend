@@ -11,8 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.community.article.domain.ArticleCategories;
-import study.moum.community.article.domain.ArticleEntity;
+import study.moum.community.article.domain.article.ArticleEntity;
 import study.moum.community.likes.domain.LikesEntity;
 import study.moum.community.likes.dto.LikesDto;
 import study.moum.community.likes.service.LikesService;
@@ -63,7 +62,7 @@ public class LikesControllerTest {
 
         article = ArticleEntity.builder()
                 .id(1)
-                .category(ArticleCategories.RECRUIT_BOARD)
+                .category(ArticleEntity.ArticleCategories.RECRUIT_BOARD)
                 .title("test title")
                 .author(member)
                 .likesCount(0)

@@ -31,8 +31,6 @@ public class CustomUserDetails implements UserDetails {
         return collection;
     }
 
-    public int getMemberId(){return memberEntity.getId();}
-
     @Override
     public String getPassword() {
         return memberEntity.getPassword();

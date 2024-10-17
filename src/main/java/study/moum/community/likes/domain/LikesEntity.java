@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.community.article.domain.ArticleEntity;
+import study.moum.community.article.domain.article.ArticleEntity;
 
 @Builder
 @AllArgsConstructor

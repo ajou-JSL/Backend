@@ -1,16 +1,14 @@
 package study.moum.community.likes.service;
 
 import lombok.RequiredArgsConstructor;
-import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
-import study.moum.community.article.domain.ArticleEntity;
-import study.moum.community.article.domain.ArticleRepository;
+import study.moum.community.article.domain.article.ArticleEntity;
+import study.moum.community.article.domain.article.ArticleRepository;
 import study.moum.community.likes.domain.LikesEntity;
 import study.moum.community.likes.domain.LikesRepository;
 import study.moum.community.likes.dto.LikesDto;
-import study.moum.community.wishlist.domain.WishlistRepository;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
 
@@ -21,7 +19,6 @@ public class LikesService {
     private final LikesRepository likesRepository;
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
-    private final WishlistRepository wishlistRepository;
 
     public LikesDto.Response createLikes(String memberName, int articleId) {
 
@@ -45,9 +42,6 @@ public class LikesService {
         article.updateLikesCount(1);
         articleRepository.save(article);
 
-        // 위시리스트 추가
-        wishlistRepository.addToWishlist(member.getId(), article.getId());
-
         return new LikesDto.Response(newLikes);
     }
 
@@ -63,7 +57,7 @@ public class LikesService {
         if(memberName.equals(likesEntity.getMember().getUsername())){
             likesRepository.deleteById(likesId);
             article.updateLikesCount(-1);
-            wishlistRepository.removeFromWishlist(member.getId(),article.getId()); // 위시리스트 삭제
+
         }
 
         return new LikesDto.Response(likesEntity);

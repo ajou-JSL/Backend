@@ -22,7 +22,7 @@ public class QCommentEntity extends EntityPathBase<CommentEntity> {
 
     public static final QCommentEntity commentEntity = new QCommentEntity("commentEntity");
 
-    public final study.moum.community.article.domain.QArticleDetailsEntity articleDetails;
+    public final study.moum.community.article.domain.article_details.QArticleDetailsEntity articleDetails;
 
     public final study.moum.auth.domain.entity.QMemberEntity author;
 
@@ -48,7 +48,7 @@ public class QCommentEntity extends EntityPathBase<CommentEntity> {
 
     public QCommentEntity(Class<? extends CommentEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.articleDetails = inits.isInitialized("articleDetails") ? new study.moum.community.article.domain.QArticleDetailsEntity(forProperty("articleDetails")) : null;
+        this.articleDetails = inits.isInitialized("articleDetails") ? new study.moum.community.article.domain.article_details.QArticleDetailsEntity(forProperty("articleDetails")) : null;
         this.author = inits.isInitialized("author") ? new study.moum.auth.domain.entity.QMemberEntity(forProperty("author")) : null;
     }
 

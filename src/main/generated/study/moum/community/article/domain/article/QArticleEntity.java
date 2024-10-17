@@ -1,4 +1,4 @@
-package study.moum.community.article.domain;
+package study.moum.community.article.domain.article;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QArticleEntity extends EntityPathBase<ArticleEntity> {
 
-    private static final long serialVersionUID = -969881957L;
+    private static final long serialVersionUID = -337541725L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -24,7 +24,7 @@ public class QArticleEntity extends EntityPathBase<ArticleEntity> {
 
     public final study.moum.auth.domain.entity.QMemberEntity author;
 
-    public final EnumPath<ArticleCategories> category = createEnum("category", ArticleCategories.class);
+    public final EnumPath<ArticleEntity.ArticleCategories> category = createEnum("category", ArticleEntity.ArticleCategories.class);
 
     public final NumberPath<Integer> commentCount = createNumber("commentCount", Integer.class);
 

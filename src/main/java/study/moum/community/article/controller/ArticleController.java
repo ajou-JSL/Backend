@@ -7,7 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import study.moum.auth.domain.CustomUserDetails;
-import study.moum.community.article.domain.ArticleCategories;
+import study.moum.community.article.domain.article.ArticleEntity;
+
 import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.community.article.service.ArticleService;
@@ -15,7 +16,6 @@ import study.moum.global.error.exception.NeedLoginException;
 import study.moum.global.response.ResponseCode;
 import study.moum.global.response.ResultResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,13 +23,14 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
+    // private final WishlistService wishlistService;
 
     /**
-     * 게시글 목록 조회 API 엔드포인트.
+     * 게시글 목록 조회 API
      *
-     * @return 게시글 목록을 포함한 응답 객체
-     *
-     * 모든 게시글 목록을 조회한 후, 성공 응답과 함께 반환
+     * @param page
+     * @param size
+     * @return 게시글 목록
      */
     @GetMapping("/api/articles")
     public ResponseEntity<ResultResponse> getArticleList(@RequestParam(defaultValue = "0") int page,
@@ -40,8 +41,12 @@ public class ArticleController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
-
-
+    /**
+     * 게시글 상세 조회 API
+     *
+     * @param id 게시글의 ID
+     * @return 게시글 단건
+     */
     @GetMapping("/api/articles/{id}")
     public ResponseEntity<ResultResponse> getArticleById(@PathVariable int id){
         ArticleDetailsDto.Response  articleDetailsResponse = articleService.getArticleById(id);
@@ -50,6 +55,13 @@ public class ArticleController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
+    /**
+     * 게시글 작성 API
+     *
+     * @param article 작성 요청 dto
+     * @param customUserDetails 현재 인증된 사용자 정보 (CustomUserDetails 객체에서 사용자 정보 추출)
+     * @return 작성한 게시글
+     */
     @PostMapping("/api/articles")
     public ResponseEntity<ResultResponse> postArticle(
             @Valid @RequestBody ArticleDto.Request articleRequestDto,
@@ -64,6 +76,14 @@ public class ArticleController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
+    /**
+     * 게시글 수정 API
+     *
+     * @param id 게시글의 ID
+     * @param customUserDetails 현재 인증된 사용자 정보 (CustomUserDetails 객체에서 사용자 정보 추출)
+     * @param article 수정 요청 dto
+     * @return 수정한 게시글
+     */
     @PatchMapping("/api/articles/{id}")
     public ResponseEntity<ResultResponse> updateArticle(
             @PathVariable int id,
@@ -76,6 +96,13 @@ public class ArticleController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
+    /**
+     * 게시글 삭제 API
+     *
+     * @param id 게시글의 ID
+     * @param customUserDetails 현재 인증된 사용자 정보 (CustomUserDetails 객체에서 사용자 정보 추출)
+     * @return 삭제한 게시글
+     */
     @DeleteMapping("/api/articles/{id}")
     public ResponseEntity<ResultResponse> deleteArticle(
             @PathVariable int id,
@@ -90,9 +117,12 @@ public class ArticleController {
 
 
     /**
-     * 키워드를 사용하여 게시글을 검색하는 API.
+     * 게시글 검색 API
      *
-     * @param keyword 검색어
+     * @param keyword
+     * @param category
+     * @param page
+     * @param size
      * @return 검색된 게시글 리스트
      */
     @GetMapping("/api/articles/search")
@@ -112,11 +142,14 @@ public class ArticleController {
      * 게시글 목록 카테고리 필터링 조회 API
      *
      * @param category 게시글 카테고리 (FREE_TALKING_BOARD 또는 RECRUIT_BOARD)
+     * @param category
+     * @param page
+     * @param size
      * @return 게시글 리스트
      */
     @GetMapping("/api/articles/category")
     public ResponseEntity<ResultResponse> getArticles(
-            @RequestParam(required = true) ArticleCategories category,
+            @RequestParam(required = true) ArticleEntity.ArticleCategories category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -124,6 +157,30 @@ public class ArticleController {
 
         ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+    }
+
+
+    /**
+     * 위시리스트 목록 조회 API
+     *
+     * @param customUserDetails 현재 인증된 사용자 정보 (CustomUserDetails 객체에서 사용자 정보 추출)
+     * @param page 페이지
+     * @param size 사이즈
+     * @return 위시리스트에 있는 게시글 리스트
+     */
+    @GetMapping("/api/articles/wishlist")
+    public ResponseEntity<ResultResponse> getMyWishlist(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int size){
+        if(customUserDetails == null){
+            throw new NeedLoginException();
+        }
+
+        List<ArticleDto.Response> articleList = articleService.getMyWishlist(customUserDetails.getUsername(), page,size);
+
+        ResultResponse response = ResultResponse.of(ResponseCode.ARTICLE_LIST_GET_SUCCESS, articleList);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
+
     }
 
 }

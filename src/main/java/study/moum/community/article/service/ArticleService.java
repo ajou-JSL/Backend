@@ -6,7 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
-import study.moum.community.article.domain.*;
+import study.moum.community.article.domain.article.ArticleEntity;
+import study.moum.community.article.domain.article.ArticleRepository;
+import study.moum.community.article.domain.article_details.ArticleDetailsEntity;
+import study.moum.community.article.domain.article_details.ArticleDetailsRepository;
+import study.moum.community.article.domain.article_details.ArticleRepositoryCustom;
 import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.global.error.ErrorCode;
@@ -133,7 +137,7 @@ public class ArticleService {
         // 새로 요청된 수정 값들 추출
         String newTitle = articleDetailsRequestDto.getTitle();
         String newContent = articleDetailsRequestDto.getContent();
-        ArticleCategories newCategory = articleDetailsRequestDto.getCategory();
+        ArticleEntity.ArticleCategories newCategory = articleDetailsRequestDto.getCategory();
 
         // article_details, article 둘 다 update
         articleDetails.updateArticleDetails(newContent);
@@ -179,12 +183,12 @@ public class ArticleService {
      * @return 카테고리에 해당하는 게시글 리스트
      */
     @Transactional(readOnly = true)
-    public List<ArticleDto.Response> getArticlesByCategory(ArticleCategories category, int page, int size) {
+    public List<ArticleDto.Response> getArticlesByCategory(ArticleEntity.ArticleCategories category, int page, int size) {
         List<ArticleEntity> articles;
 
-        if (category == ArticleCategories.FREE_TALKING_BOARD) {
+        if (category == ArticleEntity.ArticleCategories.FREE_TALKING_BOARD) {
             articles = articleRepositoryCustom.findFreeTalkingArticles(page, size);
-        } else if (category == ArticleCategories.RECRUIT_BOARD) {
+        } else if (category == ArticleEntity.ArticleCategories.RECRUIT_BOARD) {
             articles = articleRepositoryCustom.findRecruitingdArticles(page, size);
         } else {
             throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
@@ -205,6 +209,29 @@ public class ArticleService {
     @Transactional(readOnly = true)
     public List<ArticleDto.Response> getArticleWithTitleSearch(String keyword, String category,int page, int size) {
         List<ArticleEntity> articles = articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, category, page, size);
+
+        // 조회된 게시글들을 DTO로 변환
+        List<ArticleDto.Response> articleResponseList = articles.stream()
+                .map(ArticleDto.Response::new)
+                .collect(Collectors.toList());
+
+        return articleResponseList;
+    }
+
+    /**
+     * 주어진 키워드를 사용하여 게시글을 검색하는 메서드.
+     *
+     * @param memberName 사용자 이름
+     * @param page
+     * @param size
+     * @return 검색된 게시글 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<ArticleDto.Response> getMyWishlist(String memberName,int page, int size) {
+//        List<ArticleEntity> articles = articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, category, page, size);
+        int memberId = memberRepository.findByUsername(memberName).getId();
+
+        List<ArticleEntity> articles = articleRepository.findLikedArticles(memberId);
 
         // 조회된 게시글들을 DTO로 변환
         List<ArticleDto.Response> articleResponseList = articles.stream()

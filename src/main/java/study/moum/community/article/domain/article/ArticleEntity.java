@@ -1,15 +1,12 @@
-package study.moum.community.article.domain;
+package study.moum.community.article.domain.article;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.community.comment.domain.CommentEntity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -68,5 +65,14 @@ public class ArticleEntity {
         this.title = title;
         this.category = category;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum ArticleCategories {
+        FREE_TALKING_BOARD("자유게시판"),
+        RECRUIT_BOARD("모집게시판");
+
+        private final String category;
     }
 }

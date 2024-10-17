@@ -6,12 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.community.article.domain.ArticleCategories;
-import study.moum.community.article.domain.ArticleEntity;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import study.moum.community.article.domain.article.ArticleEntity;
 
 public class ArticleDto {
 
@@ -25,7 +20,7 @@ public class ArticleDto {
         private String title;
 
         @NotNull
-        private ArticleCategories category;
+        private ArticleEntity.ArticleCategories category;
 
         // ArticleDetails로 빼서 저장해줄거임 request.dto에만 존재
         private String content;
@@ -47,7 +42,7 @@ public class ArticleDto {
     public static class Response{
         private final int id;
         private final String title;
-        private final ArticleCategories category;
+        private final ArticleEntity.ArticleCategories category;
         private final int viewCounts;
         private final int commentCounts;
         private final int likeCounts;

@@ -3,8 +3,7 @@ package study.moum.community.comment.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.community.article.domain.ArticleDetailsEntity;
-import study.moum.community.article.domain.ArticleEntity;
+import study.moum.community.article.domain.article_details.ArticleDetailsEntity;
 
 @Builder
 @AllArgsConstructor

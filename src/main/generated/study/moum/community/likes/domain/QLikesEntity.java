@@ -22,7 +22,7 @@ public class QLikesEntity extends EntityPathBase<LikesEntity> {
 
     public static final QLikesEntity likesEntity = new QLikesEntity("likesEntity");
 
-    public final study.moum.community.article.domain.QArticleEntity article;
+    public final study.moum.community.article.domain.article.QArticleEntity article;
 
     public final NumberPath<Integer> id = createNumber("id", Integer.class);
 
@@ -46,7 +46,7 @@ public class QLikesEntity extends EntityPathBase<LikesEntity> {
 
     public QLikesEntity(Class<? extends LikesEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.article = inits.isInitialized("article") ? new study.moum.community.article.domain.QArticleEntity(forProperty("article"), inits.get("article")) : null;
+        this.article = inits.isInitialized("article") ? new study.moum.community.article.domain.article.QArticleEntity(forProperty("article"), inits.get("article")) : null;
         this.member = inits.isInitialized("member") ? new study.moum.auth.domain.entity.QMemberEntity(forProperty("member")) : null;
     }
 

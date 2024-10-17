@@ -1,4 +1,4 @@
-package study.moum.community.article.domain;
+package study.moum.community.article.domain.article_details;
 
 import jakarta.persistence.*;
 import lombok.*;

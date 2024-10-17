@@ -10,11 +10,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.test.context.support.WithMockUser;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
-import study.moum.community.article.domain.*;
+import study.moum.community.article.domain.article.ArticleEntity;
+import study.moum.community.article.domain.article_details.ArticleDetailsEntity;
+import study.moum.community.article.domain.article_details.ArticleDetailsRepository;
 import study.moum.community.comment.domain.CommentEntity;
 import study.moum.community.comment.domain.CommentRepository;
 import study.moum.community.comment.dto.CommentDto;
-import study.moum.community.comment.service.CommentService;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
 import study.moum.global.error.exception.NoAuthorityException;
@@ -61,7 +62,7 @@ class CommentServiceTest {
                 .id(1)
                 .title("test title")
                 .author(author)
-                .category(ArticleCategories.RECRUIT_BOARD)
+                .category(ArticleEntity.ArticleCategories.RECRUIT_BOARD)
                 .build();
 
         articleDetails = ArticleDetailsEntity.builder()

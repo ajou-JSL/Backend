@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.community.article.domain.ArticleEntity;
+import study.moum.community.article.domain.article.ArticleEntity;
 import study.moum.community.likes.domain.LikesEntity;
 
 public class LikesDto {

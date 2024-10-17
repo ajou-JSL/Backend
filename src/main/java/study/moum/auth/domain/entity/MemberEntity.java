@@ -3,7 +3,8 @@ package study.moum.auth.domain.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import study.moum.community.wishlist.domain.WishlistEntity;
+import study.moum.community.article.domain.article.ArticleEntity;
+import study.moum.community.likes.domain.LikesEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "member")
-public class MemberEntity {
+public class MemberEntity { // todo : userdetails implement 여기다가 + db column 에 안넣게하기
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +43,4 @@ public class MemberEntity {
     // admin, 일반사용자, 일반사용자중에서도 연주자,참여자 뭐 이런거 등등..
     @Column(name = "role", nullable = false)
     private String role;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<WishlistEntity> wishlists = new ArrayList<>();
 }

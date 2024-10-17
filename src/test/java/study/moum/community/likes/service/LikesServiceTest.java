@@ -5,23 +5,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
-import study.moum.community.article.domain.ArticleCategories;
-import study.moum.community.article.domain.ArticleDetailsEntity;
-import study.moum.community.article.domain.ArticleEntity;
-import study.moum.community.article.domain.ArticleRepository;
-import study.moum.community.article.dto.ArticleDto;
+import study.moum.community.article.domain.article.ArticleEntity;
+import study.moum.community.article.domain.article.ArticleRepository;
 import study.moum.community.likes.domain.LikesEntity;
 import study.moum.community.likes.domain.LikesRepository;
 import study.moum.community.likes.dto.LikesDto;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
-import study.moum.global.error.exception.NoAuthorityException;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -154,7 +148,7 @@ public class LikesServiceTest {
                 .id(80)
                 .author(userB)
                 .title("test title")
-                .category(ArticleCategories.RECRUIT_BOARD)
+                .category(ArticleEntity.ArticleCategories.RECRUIT_BOARD)
                 .build();
 
         LikesEntity likesEntity = LikesEntity.builder()

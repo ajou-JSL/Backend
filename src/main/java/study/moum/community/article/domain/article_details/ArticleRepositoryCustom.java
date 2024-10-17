@@ -1,15 +1,16 @@
-package study.moum.community.article.domain;
+package study.moum.community.article.domain.article_details;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import study.moum.community.article.domain.article.ArticleEntity;
 
 
 import java.util.List;
 
 import static io.jsonwebtoken.lang.Strings.hasText;
-import static study.moum.community.article.domain.QArticleEntity.articleEntity;
+import static study.moum.community.article.domain.article.QArticleEntity.articleEntity;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class ArticleRepositoryCustom {
     public List<ArticleEntity> findFreeTalkingArticles(int page, int size) {
         return jpaQueryFactory
                 .selectFrom(articleEntity)
-                .where(articleEntity.category.eq(ArticleCategories.FREE_TALKING_BOARD))
+                .where(articleEntity.category.eq(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD))
                 .orderBy(articleEntity.createdAt.desc())
                 .offset(page * size) // 페이지에 따른 오프셋 계산
                 .limit(size)
@@ -52,7 +53,7 @@ public class ArticleRepositoryCustom {
     public List<ArticleEntity> findRecruitingdArticles(int page, int size) {
         return jpaQueryFactory
                 .selectFrom(articleEntity)
-                .where(articleEntity.category.eq(ArticleCategories.RECRUIT_BOARD))
+                .where(articleEntity.category.eq(ArticleEntity.ArticleCategories.RECRUIT_BOARD))
                 .offset(page * size) // 페이지에 따른 오프셋 계산
                 .limit(size)
                 .orderBy(articleEntity.createdAt.desc())
@@ -82,7 +83,7 @@ public class ArticleRepositoryCustom {
     }
 
     private BooleanExpression isCategory(String category) {
-        return hasText(category) ? articleEntity.category.eq(ArticleCategories.valueOf(category)) : null;
+        return hasText(category) ? articleEntity.category.eq(ArticleEntity.ArticleCategories.valueOf(category)) : null;
     }
 
 }

@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.community.article.domain.ArticleCategories;
+import study.moum.community.article.domain.article.ArticleEntity;
 import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.community.article.service.ArticleService;
@@ -62,9 +62,9 @@ class ArticleControllerTest {
     void getArticleList() throws Exception {
         // given : 게시글 리스트 생성
         List<ArticleDto.Response> mockResponse = List.of(
-                new ArticleDto.Response(1, "Title 1", ArticleCategories.FREE_TALKING_BOARD, 10, 5, 3, "author1"),
-                new ArticleDto.Response(2, "Title 2", ArticleCategories.FREE_TALKING_BOARD, 15, 3, 4, "author2"),
-                new ArticleDto.Response(3, "Title 3", ArticleCategories.FREE_TALKING_BOARD, 20, 2, 1, "author3")
+                new ArticleDto.Response(1, "Title 1", ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, 10, 5, 3, "author1"),
+                new ArticleDto.Response(2, "Title 2", ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, 15, 3, 4, "author2"),
+                new ArticleDto.Response(3, "Title 3", ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, 20, 2, 1, "author3")
         );
 
         // when
@@ -82,13 +82,13 @@ class ArticleControllerTest {
     @DisplayName("카테고리별 게시글 목록 조회 테스트")
     @WithAuthUser
     void getArticlesByCategoryTest() throws Exception {
-        ArticleCategories category = ArticleCategories.FREE_TALKING_BOARD;
+        ArticleEntity.ArticleCategories category = ArticleEntity.ArticleCategories.FREE_TALKING_BOARD;
 
         // given: 게시글 리스트 생성
         List<ArticleDto.Response> mockResponse = List.of(
-                new ArticleDto.Response(1, "Title 1", ArticleCategories.FREE_TALKING_BOARD, 10, 5, 3, "author1"),
-                new ArticleDto.Response(2, "Title 2", ArticleCategories.FREE_TALKING_BOARD, 15, 3, 4, "author2"),
-                new ArticleDto.Response(3, "Title 3", ArticleCategories.RECRUIT_BOARD, 20, 2, 1, "author3")
+                new ArticleDto.Response(1, "Title 1", ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, 10, 5, 3, "author1"),
+                new ArticleDto.Response(2, "Title 2", ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, 15, 3, 4, "author2"),
+                new ArticleDto.Response(3, "Title 3", ArticleEntity.ArticleCategories.RECRUIT_BOARD, 20, 2, 1, "author3")
         );
 
         // when: 서비스의 메서드 호출 시 mockResponse를 반환하도록 설정
@@ -143,7 +143,7 @@ class ArticleControllerTest {
     void searchArticlesTest() throws Exception {
         String keyword = "searchKeyword";
         String category = "FREE_TALKING_BOARD";
-        List<ArticleDto.Response> mockResponse = List.of(new ArticleDto.Response(1, "Title", ArticleCategories.FREE_TALKING_BOARD, 10, 5, 3, "author"));
+        List<ArticleDto.Response> mockResponse = List.of(new ArticleDto.Response(1, "Title", ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, 10, 5, 3, "author"));
 
         when(articleService.getArticleWithTitleSearch(keyword, category,0,10)).thenReturn(mockResponse);
 
@@ -169,12 +169,12 @@ class ArticleControllerTest {
         // given : Article 생성
         ArticleDto.Request articleRequest = ArticleDto.Request.builder()
                 .id(1)
-                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                 .title("test title")
                 .author(author)
                 .build();
 
-        ArticleDto.Response response = new ArticleDto.Response(1, "test title", ArticleCategories.FREE_TALKING_BOARD, 0, 0, 0,"testuser");
+        ArticleDto.Response response = new ArticleDto.Response(1, "test title", ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, 0, 0, 0,"testuser");
 
         // when
         Mockito.when(articleService.postArticle(Mockito.any(), Mockito.eq("testuser")))

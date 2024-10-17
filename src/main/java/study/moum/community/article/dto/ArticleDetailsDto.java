@@ -1,14 +1,10 @@
 package study.moum.community.article.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import study.moum.auth.domain.entity.MemberEntity;
-import study.moum.community.article.domain.ArticleCategories;
-import study.moum.community.article.domain.ArticleDetailsEntity;
-import study.moum.community.article.domain.ArticleEntity;
+import study.moum.community.article.domain.article.ArticleEntity;
+import study.moum.community.article.domain.article_details.ArticleDetailsEntity;
 import study.moum.community.comment.dto.CommentDto;
 
 import java.util.ArrayList;
@@ -23,7 +19,7 @@ public class ArticleDetailsDto {
     public static class Request{
         private int id;
 
-        private ArticleCategories category;
+        private ArticleEntity.ArticleCategories category;
 
         // only update request 용도
         private String title;

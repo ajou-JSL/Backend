@@ -1,4 +1,4 @@
-package study.moum.community.article.domain;
+package study.moum.community.article.domain.article_details;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QArticleDetailsEntity extends EntityPathBase<ArticleDetailsEntity> {
 
-    private static final long serialVersionUID = -1243830515L;
+    private static final long serialVersionUID = -1567629854L;
 
     public static final QArticleDetailsEntity articleDetailsEntity = new QArticleDetailsEntity("articleDetailsEntity");
 

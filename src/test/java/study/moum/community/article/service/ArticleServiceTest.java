@@ -10,7 +10,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
-import study.moum.community.article.domain.*;
+import study.moum.community.article.domain.article.ArticleEntity;
+import study.moum.community.article.domain.article.ArticleRepository;
+import study.moum.community.article.domain.article_details.ArticleDetailsEntity;
+import study.moum.community.article.domain.article_details.ArticleDetailsRepository;
+import study.moum.community.article.domain.article_details.ArticleRepositoryCustom;
 import study.moum.community.article.dto.ArticleDetailsDto;
 import study.moum.community.article.dto.ArticleDto;
 import study.moum.global.error.exception.NeedLoginException;
@@ -23,7 +27,6 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class ArticleServiceTest {
@@ -64,7 +67,7 @@ class ArticleServiceTest {
     void createArticleSuccess_LoggedInUser() {
         // given: Article 생성
         ArticleDto.Request request = ArticleDto.Request.builder()
-                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                 .author(author)
                 .title("test title")
                 .build();
@@ -84,7 +87,7 @@ class ArticleServiceTest {
 
         // then
         assertEquals("test title", actualResponse.getTitle());
-        assertEquals(ArticleCategories.FREE_TALKING_BOARD, actualResponse.getCategory());
+        assertEquals(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, actualResponse.getCategory());
     }
 
     @Test
@@ -92,7 +95,7 @@ class ArticleServiceTest {
     void createArticleFail_NeedLoginException() {
         // given : Article 생성
         ArticleDto.Request request = ArticleDto.Request.builder()
-                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                 .author(author)
                 .title("test title")
                 .build();
@@ -113,7 +116,7 @@ class ArticleServiceTest {
         ArticleEntity article = ArticleEntity.builder()
                 .id(1)
                 .title("test title")
-                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                 .author(author)
                 .build();
 
@@ -174,7 +177,7 @@ class ArticleServiceTest {
         ArticleEntity article = ArticleEntity.builder()
                 .id(1)
                 .title("title")
-                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                 .author(author)
                 .build();
 
@@ -190,7 +193,7 @@ class ArticleServiceTest {
                 .id(1)
                 .title("updated title")
                 .content("updated content")
-                .category(ArticleCategories.RECRUIT_BOARD)
+                .category(ArticleEntity.ArticleCategories.RECRUIT_BOARD)
                 .build();
 
         // Mock 동작 : repository 에서 탐색
@@ -221,7 +224,7 @@ class ArticleServiceTest {
         ArticleEntity article = ArticleEntity.builder()
                 .id(1)
                 .title("title")
-                .category(ArticleCategories.FREE_TALKING_BOARD)
+                .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                 .author(author)
                 .build();
 
@@ -258,25 +261,25 @@ class ArticleServiceTest {
                 ArticleEntity.builder()
                         .id(1)
                         .title("test title 1")
-                        .category(ArticleCategories.FREE_TALKING_BOARD)
+                        .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                         .author(author)
                         .build(),
                 ArticleEntity.builder()
                         .id(2)
                         .title("test title 2")
-                        .category(ArticleCategories.FREE_TALKING_BOARD)
+                        .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                         .author(author)
                         .build(),
                 ArticleEntity.builder()
                         .id(3)
                         .title("test title 3")
-                        .category(ArticleCategories.RECRUIT_BOARD)
+                        .category(ArticleEntity.ArticleCategories.RECRUIT_BOARD)
                         .author(author)
                         .build(),
                 ArticleEntity.builder()
                         .id(4)
                         .title("test title 4")
-                        .category(ArticleCategories.RECRUIT_BOARD)
+                        .category(ArticleEntity.ArticleCategories.RECRUIT_BOARD)
                         .author(author)
                         .build()
         );
@@ -286,15 +289,15 @@ class ArticleServiceTest {
         when(articleRepositoryCustom.findRecruitingdArticles(0,10)).thenReturn(mockArticle); // 모집게시판
 
         // when
-        List<ArticleDto.Response> Freearticles = articleService.getArticlesByCategory(ArticleCategories.FREE_TALKING_BOARD,0,10);
-        List<ArticleDto.Response> Recruitarticles = articleService.getArticlesByCategory(ArticleCategories.RECRUIT_BOARD,0,10);
+        List<ArticleDto.Response> Freearticles = articleService.getArticlesByCategory(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD,0,10);
+        List<ArticleDto.Response> Recruitarticles = articleService.getArticlesByCategory(ArticleEntity.ArticleCategories.RECRUIT_BOARD,0,10);
 
         // then
         assertEquals(4, mockArticle.size());
         assertEquals("test title 1", Freearticles.get(0).getTitle());
-        assertEquals(ArticleCategories.FREE_TALKING_BOARD, Freearticles.get(0).getCategory());
+        assertEquals(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD, Freearticles.get(0).getCategory());
         assertEquals("test title 3", Recruitarticles.get(2).getTitle());
-        assertEquals(ArticleCategories.RECRUIT_BOARD, Recruitarticles.get(2).getCategory());
+        assertEquals(ArticleEntity.ArticleCategories.RECRUIT_BOARD, Recruitarticles.get(2).getCategory());
     }
 
     @Test
@@ -305,25 +308,25 @@ class ArticleServiceTest {
                 ArticleEntity.builder()
                         .id(1)
                         .title("test title 1")
-                        .category(ArticleCategories.FREE_TALKING_BOARD)
+                        .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                         .author(author)
                         .build(),
                 ArticleEntity.builder()
                         .id(2)
                         .title("test title 2")
-                        .category(ArticleCategories.FREE_TALKING_BOARD)
+                        .category(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                         .author(author)
                         .build(),
                 ArticleEntity.builder()
                         .id(3)
                         .title("test title 3")
-                        .category(ArticleCategories.RECRUIT_BOARD)
+                        .category(ArticleEntity.ArticleCategories.RECRUIT_BOARD)
                         .author(author)
                         .build(),
                 ArticleEntity.builder()
                         .id(4)
                         .title("test title 4")
-                        .category(ArticleCategories.RECRUIT_BOARD)
+                        .category(ArticleEntity.ArticleCategories.RECRUIT_BOARD)
                         .author(author)
                         .build()
         );
@@ -338,7 +341,7 @@ class ArticleServiceTest {
         // Mock 동작
         List<ArticleEntity> articleList = mockArticle.stream()
                 .filter(article -> article.getTitle().contains(keyword) &&
-                        article.getCategory() == ArticleCategories.FREE_TALKING_BOARD)
+                        article.getCategory() == ArticleEntity.ArticleCategories.FREE_TALKING_BOARD)
                 .collect(Collectors.toList());
 
         when(articleRepositoryCustom.searchArticlesByTitleKeyword(keyword, "FREE_TALKING_BOARD",0,10))
@@ -349,8 +352,8 @@ class ArticleServiceTest {
 
         // then
         assertEquals(2, response.size());
-        assertEquals(ArticleCategories.FREE_TALKING_BOARD,response.get(0).getCategory());
-        assertEquals(ArticleCategories.FREE_TALKING_BOARD,response.get(1).getCategory());
+        assertEquals(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD,response.get(0).getCategory());
+        assertEquals(ArticleEntity.ArticleCategories.FREE_TALKING_BOARD,response.get(1).getCategory());
     }
 
 }

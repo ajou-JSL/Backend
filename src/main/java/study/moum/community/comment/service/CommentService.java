@@ -5,17 +5,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.moum.auth.domain.entity.MemberEntity;
 import study.moum.auth.domain.repository.MemberRepository;
-import study.moum.community.article.domain.ArticleDetailsEntity;
-import study.moum.community.article.domain.ArticleDetailsRepository;
-import study.moum.community.article.domain.ArticleEntity;
-import study.moum.community.article.domain.ArticleRepository;
+import study.moum.community.article.domain.article.ArticleEntity;
+import study.moum.community.article.domain.article_details.ArticleDetailsEntity;
+import study.moum.community.article.domain.article_details.ArticleDetailsRepository;
+import study.moum.community.article.domain.article.ArticleRepository;
 import study.moum.community.comment.domain.CommentEntity;
 import study.moum.community.comment.domain.CommentRepository;
 import study.moum.community.comment.dto.CommentDto;
 import study.moum.global.error.ErrorCode;
 import study.moum.global.error.exception.CustomException;
 import study.moum.global.error.exception.MemberNotExistException;
-import study.moum.global.error.exception.NeedLoginException;
 import study.moum.global.error.exception.NoAuthorityException;
 
 @Service
