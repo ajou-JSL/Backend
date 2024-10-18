@@ -12,9 +12,10 @@ import study.moum.global.response.ResultResponse;
 public class TestController {
 
     @GetMapping("/test")
-    public ResponseEntity<ResultResponse> testPage(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public String testPage(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         // System.out.println(customUserDetails.getUsername());
 
-        return new ResponseEntity<>(HttpStatus.OK);
+//        return new ResponseEntity<>(HttpStatus.OK);
+        return "test";
     }
 }

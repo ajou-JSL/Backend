@@ -35,15 +35,16 @@ spring:
     properties:
       mail:
         smtp:
-          auth: true # SMTP 인증 사용
-          ssl:
-            enable: true # SSL 사용
           starttls:
-            enable: true # STARTTLS 사용
-            # required: true # 필요한 경우 사용
-          connection timeout: 5000 # 연결 타임아웃(ms)
-          timeout: 5000 # 응답 대기 시간(ms)
-          write timeout: 5000 # 쓰기 타임아웃(ms)
+            enable: true
+          #            required: true
+          auth: true
+          #          connectiontimeout: 5000
+          #          timeout: 5000
+          #          writetimeout: 5000
+          ssl:
+            #trust: smtp.naver.com
+            enable: true #??? ?? -> SSL ??? ?????
 
   data:
     redis:
