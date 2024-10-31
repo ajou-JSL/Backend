@@ -24,7 +24,7 @@ public class MemberEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    //@Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false)
     @Pattern(regexp = "^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]{2,10}$")
     private String name;
 
@@ -33,7 +33,7 @@ public class MemberEntity {
     private String username;
 
     @Column(name = "password", nullable = false)
-//    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,20}$")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,20}$")
     private String password;
 
     @Column(name = "profile_description", nullable = true)

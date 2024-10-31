@@ -15,7 +15,7 @@ public class MemberDto {
     public static class Request{
         private int id;
 
-        //@NotEmpty @NotNull
+        @NotEmpty @NotNull
         @Pattern(regexp = "^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]{2,10}$")
         private String name;
 
@@ -24,7 +24,7 @@ public class MemberDto {
         private String username;
 
         @NotEmpty @NotNull
-//        @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,20}$")
+        @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,20}$")
         private String password;
 
         @NotEmpty @NotNull @Email
