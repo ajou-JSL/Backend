@@ -24,7 +24,7 @@ public class MemberDto {
         private String username;
 
         @NotEmpty @NotNull
-        @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,20}$")
+//        @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,20}$")
         private String password;
 
         @NotEmpty @NotNull @Email
